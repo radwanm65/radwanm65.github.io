@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Introduction to React | Course Notes</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Introduction to React" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Course material" />
+<meta property="og:description" content="Course material" />
+<link rel="canonical" href="index.html" />
+<meta property="og:url" content="https://nwcourses.github.io/COM623/old/week_2/" />
+<meta property="og:site_name" content="Course Notes" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Introduction to React" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Course material","headline":"Introduction to React","url":"https://nwcourses.github.io/COM623/old/week_2/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="../../../assets/css/style.css%3Fv=d5062f5581830390b9c21268f82f9c13411b2030.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nwcourses.github.io/">Course Notes</a></h1>
+      
+
+      <h1 id="introduction-to-react">Introduction to React</h1>
+
+<p>By the end of this week you should be able to address the following questions:</p>
+
+<ul>
+  <li>
+    <p>What is React?</p>
+  </li>
+  <li>
+    <p>What are React components?</p>
+  </li>
+  <li>
+    <p>What are props?</p>
+  </li>
+  <li>
+    <p>What is JSX?</p>
+  </li>
+  <li>
+    <p>How do you create a compositional component and what is the point?</p>
+  </li>
+  <li>
+    <p>What is React state? (we will explore this more next week)</p>
+  </li>
+</ul>
+
+<h2 id="why-react">Why React</h2>
+
+<p>React is one of the leading JavaScript libraries for building web user interfaces.</p>
+
+<p>According to the <a href="https://reactjs.org/">React</a> documentation, “it makes it painless to create interactive UIs.”</p>
+
+<p>Speaking broadly, React offers the following benefits:</p>
+
+<ul>
+  <li>A light layer of functionality on top of JavaScript</li>
+  <li>An experienced React developer is also an experienced JavaScript developer</li>
+  <li>The React job market is buoyant and developers are demanding high salaries</li>
+</ul>
+
+<h2 id="video-walk-through">Video Walk Through</h2>
+
+<p>For the more visually inclined the former tutor of this module, Joe Appleton, has created a tutorial walking you through this weeks notes, but note that it relates to the former version of these notes. React has had some changes so the notes have  been updated. Nonetheless it’s provided in case you find it useful,</p>
+
+<iframe src="https://solent.cloud.panopto.eu/Panopto/Pages/Embed.aspx?id=052d879f-385a-4c8e-a0f4-ac5201289fe6&amp;autoplay=false&amp;offerviewer=true&amp;showtitle=true&amp;showbrand=false&amp;start=1946&amp;interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen="" allow="autoplay"></iframe>
+
+<h2 id="creating-your-first-react-app">Creating your first React app</h2>
+
+<p>Formerly, the recommended way of creating a React app was with <a href="https://create-react-app.dev">create-react-app</a>, which automatically downloads dependencies and writes build scripts for you. However <code class="language-plaintext highlighter-rouge">create-react-app</code> is no longer maintained and therefore its use is not recommended. It still works, but it may break in the future.</p>
+
+<p>If you still want to use <code class="language-plaintext highlighter-rouge">create-react-app</code>, please look at this video:</p>
+
+<iframe src="https://solent.cloud.panopto.eu/Panopto/Pages/Embed.aspx?id=052d879f-385a-4c8e-a0f4-ac5201289fe6&amp;autoplay=false&amp;offerviewer=true&amp;showtitle=true&amp;showbrand=false&amp;start=182&amp;interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen="" allow="autoplay"></iframe>
+
+<h3 id="creating-a-hello-world-react-app-from-scratch">Creating a Hello World React app from scratch</h3>
+
+<p>Instead, you can create and build it from scratch, making use of <code class="language-plaintext highlighter-rouge">npm</code> to install dependencies, Webpack to build, and a third tool, <a href="https://babeljs.io">Babel</a>, which we will look at below.</p>
+
+<p>The Hello World React app is available on GitHub at <a href="https://github.com/nwcourses/react-starter">https://github.com/nwcourses/react-starter</a>. We will go through each of its components.</p>
+
+<h4 id="babel---transpiling-javascript">Babel - transpiling JavaScript</h4>
+
+<p>Babel is a <em>transpiler</em>: a piece of software which converts between different JavaScript versions. Why is this useful? First of all it allows the newest versions of JavaScript, which may not be supported by older browsers, to be <em>transpiled</em> into older versions which browsers do support. Formerly, Babel was used extensively to transpile ECMAScript 6 upwards into the older version of JavaScript, ECMAScript 5, when the former was not widely supported. Now it is less used for this purpose as ECMAScript 6 and higher are widely supported by browsers.</p>
+
+<p>In the context of React, Babel is important. With React, we write out code using an extension of JavaScript, <em>JSX</em>, which we will look at below. JSX is not natively supported by browsers so we need to transpile it using Babel into standard JavaScript.</p>
+
+<h4 id="the-packagejson">The package.json</h4>
+
+<p>We will start our examination of the Hello World repository with the <code class="language-plaintext highlighter-rouge">package.json</code> file, used by <code class="language-plaintext highlighter-rouge">npm</code> to download dependencies and build the app.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "name": "react-wp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack --mode development",
+    "start": "webpack-dev-server --mode development --open",
+    "build": "webpack --mode production"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-react": "^7.22.15",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1",
+    "babel-loader": "^9.1.3"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
+</code></pre></div></div>
+
+<p>Hopefully some of this will be familiar to you from last week:</p>
+
+<ul>
+  <li>
+    <p>the <code class="language-plaintext highlighter-rouge">scripts</code> section specifies the scripts we can run with <code class="language-plaintext highlighter-rouge">npm</code>: you can see there is a <code class="language-plaintext highlighter-rouge">dev</code> script to build the project in development mode, a <code class="language-plaintext highlighter-rouge">build</code> script to build it in production mode, and a <code class="language-plaintext highlighter-rouge">start</code> script to start the <code class="language-plaintext highlighter-rouge">webpack-dev-server</code> (which we looked at last week).</p>
+  </li>
+  <li>
+    <p>we then specify the <code class="language-plaintext highlighter-rouge">devDependencies</code>. The <code class="language-plaintext highlighter-rouge">devDependencies</code> are those dependencies only used for building the app: they are not needed to run it. They include:</p>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">@babel/core</code> : the core part of Babel.</li>
+      <li><code class="language-plaintext highlighter-rouge">@babel/preset-env</code> : for transpiling ES6 to ES5 (for maximum compatibility the output is in ES5).</li>
+      <li><code class="language-plaintext highlighter-rouge">@babel/preset-react</code> : for transpiling React JSX code.</li>
+      <li><code class="language-plaintext highlighter-rouge">webpack</code>, <code class="language-plaintext highlighter-rouge">webpack-cli</code> and <code class="language-plaintext highlighter-rouge">webpack-dev-server</code>, as last week.</li>
+      <li><code class="language-plaintext highlighter-rouge">babel-loader</code> : Webpack “plugin” for Babel, linking the two together and allowing you to specify which files will be handled by Babel in <code class="language-plaintext highlighter-rouge">webpack.config.js</code>.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Finally the <code class="language-plaintext highlighter-rouge">dependencies</code> include React itself, and <code class="language-plaintext highlighter-rouge">react-dom</code> which allows DOM manipulation with React.</p>
+
+<h4 id="the-webpackconfigjs">The webpack.config.js</h4>
+
+<p>Next we will discuss the Webpack configuration file, <code class="language-plaintext highlighter-rouge">webpack.config.js</code>, which we also saw last week. Here is the <code class="language-plaintext highlighter-rouge">webpack.config.js</code> for this project:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">path</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">entry</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./src/index.js</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">'</span><span class="s1">dist</span><span class="dl">'</span><span class="p">),</span>
+        <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">bundle.js</span><span class="dl">'</span>
+    <span class="p">},</span>
+    <span class="na">optimization</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">minimize</span><span class="p">:</span> <span class="kc">false</span>
+    <span class="p">},</span>
+    <span class="na">devServer</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">static</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./dist</span><span class="dl">'</span>
+    <span class="p">},</span>
+    <span class="na">module</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">rules</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.(</span><span class="sr">js|jsx</span><span class="se">)</span><span class="sr">$/</span><span class="p">,</span>
+                <span class="na">exclude</span><span class="p">:</span> <span class="sr">/node_modules/</span><span class="p">,</span>
+                <span class="na">use</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="na">loader</span><span class="p">:</span> <span class="dl">"</span><span class="s2">babel-loader</span><span class="dl">"</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>We went through most of this last week. However note the <code class="language-plaintext highlighter-rouge">rules</code> section within <code class="language-plaintext highlighter-rouge">module</code>. We looked at this last week in the context of including CSS files and images with Webpack, and specifying custom loaders to handle these and include them in the bundle. Hopefully you can see that this is testing for files with extension <code class="language-plaintext highlighter-rouge">.js</code> or <code class="language-plaintext highlighter-rouge">.jsx</code>, and if they occur, handle them with the <code class="language-plaintext highlighter-rouge">babel-loader</code> (i.e. they will be transpiled with Babel). We also exclude the <code class="language-plaintext highlighter-rouge">node_modules</code> folder as we do not want to wastefully run Babel on any third-party libraries we are using, in which the JavaScript will already be suitable for bundling without the use of Babel.</p>
+
+<h4 id="the-babelrc-file">The .babelrc file</h4>
+
+<p>Finally we have a third configuration file: <code class="language-plaintext highlighter-rouge">.babelrc</code>. This is the Babel configuration file.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+	"presets": ["@babel/env", "@babel/react"]
+}
+</code></pre></div></div>
+<p>This tells Babel which transformations to enable. The <code class="language-plaintext highlighter-rouge">env</code> transformation is the standard newer-to-older JavaScript transformation, while the <code class="language-plaintext highlighter-rouge">react</code> transformation allows transformation of React (JSX) code into standard JavaScript.</p>
+
+<h2 id="exploring-react---hello-world">Exploring React - Hello World</h2>
+
+<p>If you look inside the <code class="language-plaintext highlighter-rouge">src</code> folder of the <code class="language-plaintext highlighter-rouge">react-starter</code> example, you can see <code class="language-plaintext highlighter-rouge">index.js</code>, containing a React <code class="language-plaintext highlighter-rouge">Hello World</code> application:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">ReactDOM</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-dom/client</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">root</span><span class="dl">'</span><span class="p">));</span>
+<span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="nx">World</span><span class="o">!&lt;</span><span class="sr">/h1&gt;</span><span class="se">)</span><span class="err">;
+</span></code></pre></div></div>
+
+<p>If you look at this code, you should notice that the <code class="language-plaintext highlighter-rouge">render()</code> method, on the last line, takes a string of HTML which is not in quotes. What is this? It’s <strong>JSX</strong>.</p>
+
+<h3 id="jsx">JSX</h3>
+
+<p>With React, as hinted above, we use an extension of JavaScript called JSX (see the React documentation). JSX allows us to embed HTML elements within JavaScript code which can simplify coding a component if it contains large amounts of static HTML and only a small amount of variable data. You will see examples of JSX below. Because JSX is not native JavaScript, it needs to be converted to standard JavaScript using Babel. We discussed this process above.</p>
+
+<h3 id="explanation-of-the-code">Explanation of the code</h3>
+
+<p>So what’s the code example above doing?</p>
+
+<ul>
+  <li>
+    <p>First of all we create a root element for our React app. This is done with the <code class="language-plaintext highlighter-rouge">createRoot()</code> method, part of <code class="language-plaintext highlighter-rouge">ReactDOM</code>. This takes an existing HTML element as an argument - here, the element with the ID of <code class="language-plaintext highlighter-rouge">root</code></p>
+  </li>
+  <li>
+    <p>We then call the <code class="language-plaintext highlighter-rouge">render()</code> method of our root elementand specify something which looks like a string of HTML, but does not have the quotes. This is <strong>JSX</strong>. So here the React code will render an H1 heading reading Hello World inside the element with the ID of <code class="language-plaintext highlighter-rouge">root</code>.</p>
+  </li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">npx</code>, just like <code class="language-plaintext highlighter-rouge">npm</code>, is a tool that is installed with node. <code class="language-plaintext highlighter-rouge">npx</code> allows us to run executables that are stored in the <code class="language-plaintext highlighter-rouge">npm</code> repository. We can use <code class="language-plaintext highlighter-rouge">npx</code> to quickly scaffold a React application:</p>
+
+<h3 id="exercise-1---testing-the-app">Exercise 1 - Testing the app</h3>
+
+<p>1.1 From within command line run:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">npm</span> <span class="nx">install</span>
+<span class="nx">npm</span> <span class="nx">start</span>
+</code></pre></div></div>
+
+<p>As we saw above, this will install the dependencies and then start <code class="language-plaintext highlighter-rouge">webpack-dev-server</code> and serve your application from the <code class="language-plaintext highlighter-rouge">dist</code> folder, as we did last week.</p>
+
+<p>1.2 Version control your work and upload it to a GitHub Repo</p>
+
+<h2 id="react-components">React Components</h2>
+
+<p>React apps are created through composing a series of reusable <strong>components</strong> - everything in your app is a component. They allow you to split your UI into a series of reusable pieces.</p>
+
+<p>Conceptually a component in React is a JavaScript function which returns JSX. Here is an example component called <code class="language-plaintext highlighter-rouge">Welcome</code> which is implemented as a function of that name, and returns JSX containing a greeting to a specified name.</p>
+
+<p>Component functions take one parameter: <code class="language-plaintext highlighter-rouge">props</code>, which is an object representing the properties passed in to the component, known in React as <strong>props</strong>. We discuss props below.</p>
+
+<p>Each component should go in its own file, for modularity. So the component below would be saved in <code class="language-plaintext highlighter-rouge">Welcome.js</code>.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span> <span class="c1">// must include in all components</span>
+
+<span class="kd">function</span> <span class="nx">Welcome</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Hello</span><span class="p">,</span> <span class="p">{</span><span class="nx">props</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/h1&gt;</span><span class="err">;
+</span><span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Welcome</span><span class="p">;</span> <span class="c1">// export the function so we can import it from the index.js</span>
+</code></pre></div></div>
+<p>We could render this component in our <code class="language-plaintext highlighter-rouge">index.js</code> by specifying it as a <code class="language-plaintext highlighter-rouge">&lt;Welcome&gt;</code> tag:</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">ReactDOM</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-dom/client</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Welcome</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Welcome</span><span class="dl">'</span><span class="p">;</span> <span class="c1">// must import the component JS file</span>
+
+<span class="kd">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">root</span><span class="dl">'</span><span class="p">));</span>
+<span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">Welcome</span> <span class="nx">name</span><span class="o">=</span><span class="dl">'</span><span class="s1">Fred</span><span class="dl">'</span> <span class="o">/&gt;</span><span class="p">);</span><span class="s2">`
+</span></code></pre></div></div>
+<p>Note how we pass in a <code class="language-plaintext highlighter-rouge">name</code> property to the <code class="language-plaintext highlighter-rouge">Welcome</code> component. Inside the function which implements the component, we access that property with <code class="language-plaintext highlighter-rouge">props.name</code>.</p>
+
+<h3 id="props">Props</h3>
+
+<p>Props (short for properties) are a key feature in React (see the React documentation). Props allow you to pass parameters to the component. You can see this in the example above: note how the <code class="language-plaintext highlighter-rouge">Welcome</code> function takes a <code class="language-plaintext highlighter-rouge">props</code> object as a parameter. This <code class="language-plaintext highlighter-rouge">props</code> object contains the properties passed into the component.</p>
+
+<p>So, once again, note how our <code class="language-plaintext highlighter-rouge">Welcome</code> component takes one prop called <code class="language-plaintext highlighter-rouge">name</code>, with a value of Fred. The component function takes an object containing <strong>all props</strong> as a parameter; we identify the specific prop we’re interested in by obtaining the corresponding property of this object. Here, only one prop is passed into the component, <code class="language-plaintext highlighter-rouge">name</code>, so we access this one and only prop inside the component with <code class="language-plaintext highlighter-rouge">props.name</code>.</p>
+
+<h3 id="exercise-2">Exercise 2</h3>
+
+<ul>
+  <li>Try out the above.</li>
+  <li>Try passing in a second prop for the age, so that a message which greets the user according to the two props passed in appears. For example:</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hello James, your age is 18!
+</code></pre></div></div>
+<p>appears if <code class="language-plaintext highlighter-rouge">James</code> and <code class="language-plaintext highlighter-rouge">18</code> are passed in as props for the name and age.</p>
+
+<h3 id="object-destructuring">Object destructuring</h3>
+
+<p>We can improve the syntax for specifying the props as parameters in this way:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Welcome</span><span class="p">({</span><span class="nx">name</span><span class="p">,</span> <span class="nx">age</span><span class="p">})</span>
+</code></pre></div></div>
+<p>rather than</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Welcome</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>What is this doing? This is a general JavaScript (not React specific) feature known as <strong>object destructuring</strong>. It allows us to allocate properties of a JavaScript object into variables of the same name. Here is a simpler non-React example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">displaySong</span><span class="p">({</span><span class="nx">title</span><span class="p">,</span> <span class="nx">artist</span><span class="p">})</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">title</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">artist</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">songObject</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Wonderwall</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">artist</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Oasis</span><span class="dl">'</span>
+<span class="p">};</span>
+
+<span class="nx">displaySong</span><span class="p">(</span><span class="nx">songObject</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>In this simpler example we create an object <code class="language-plaintext highlighter-rouge">songObject</code> containing two properties <code class="language-plaintext highlighter-rouge">title</code> and <code class="language-plaintext highlighter-rouge">artist</code>. We then pass this to the <code class="language-plaintext highlighter-rouge">displaySong()</code> function. However, note that <code class="language-plaintext highlighter-rouge">displaySong()</code> destructures the object into two variables, title and artist, corresponding to the properties of the same name.</p>
+
+<p>Likewise with React props, the props of a component are, as we have seen, passed into the component function an object, which are then destructured in the same way, e.g. into <code class="language-plaintext highlighter-rouge">name</code> and <code class="language-plaintext highlighter-rouge">age</code> variables rather than <code class="language-plaintext highlighter-rouge">props.name</code> and <code class="language-plaintext highlighter-rouge">props.age </code>properties.</p>
+
+<h3 id="exercise-3">Exercise 3</h3>
+
+<p>Change your code to use destructuring.</p>
+
+<h2 id="more-on-jsx">More on JSX</h2>
+
+<p>As we saw above, JSX is a syntax extension to JavaScript and allows you to combine the full power of JavaScript to construct views. Let’s consider a more complete example in updating our <code class="language-plaintext highlighter-rouge">src/App</code> function:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">name</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Joe Appleton</span><span class="dl">"</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">age</span> <span class="o">=</span> <span class="mi">21</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">heading</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Hello</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="p">},</span> <span class="nx">your</span> <span class="nx">age</span> <span class="nx">is</span> <span class="p">{</span><span class="nx">age</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/h1&gt;</span><span class="err">;
+</span>
+  <span class="kd">const</span> <span class="nx">sum</span> <span class="o">=</span> <span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="p">)</span> <span class="o">=&gt;</span>  <span class="nx">x</span> <span class="o">+</span> <span class="nx">y</span><span class="p">;</span> <span class="c1">// define an arrow function to add two numbers</span>
+
+  <span class="k">return</span> <span class="p">(</span>
+  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+    <span class="p">{</span><span class="nx">heading</span><span class="p">}</span>
+    <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span> <span class="nx">Testing</span> <span class="nx">an</span> <span class="nx">expression</span><span class="p">:</span> <span class="nx">One</span> <span class="nx">plus</span> <span class="nx">one</span> <span class="nx">is</span> <span class="p">{</span><span class="nx">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)}</span> <span class="o">!</span> <span class="o">&lt;</span><span class="sr">/h2</span><span class="err">&gt;
+</span>    <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span> <span class="nx">Testing</span> <span class="nx">another</span> <span class="nx">expression</span><span class="p">:</span> <span class="nx">You</span> <span class="p">{</span><span class="nx">age</span> <span class="o">&gt;=</span> <span class="mi">18</span> <span class="p">?</span> <span class="dl">"</span><span class="s2">can</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">cannot</span><span class="dl">"</span><span class="p">}</span> <span class="nx">vote</span><span class="o">!</span> <span class="o">&lt;</span><span class="sr">/h2</span><span class="err">&gt;
+</span>  <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>  <span class="p">);</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>There are a few points of note to understand in the above example</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">return(...)</code> the parentheses <code class="language-plaintext highlighter-rouge">()</code> is ES6 and allows us to return on multiple lines</li>
+  <li>To nest variables and expressions within our JSX we must use curly brackets (e.g. <code class="language-plaintext highlighter-rouge">{name}</code>)</li>
+  <li>In case you are unaware, the expression:
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>age &gt;= 18 ? "can": "cannot"
+</code></pre></div>    </div>
+    <p>evaluates to “can” if the age is greater than or equal to 18, or “cannot” if not. It’s a concise form of an <code class="language-plaintext highlighter-rouge">if</code> statement, known as a <strong>ternary expression</strong>.</p>
+  </li>
+  <li>There must be a single parent tags within the JSX returned from the component function. In this instance - <code class="language-plaintext highlighter-rouge">&lt;div&gt; ... &lt;/div&gt;</code> You cannot return JSX without a root tag, so <code class="language-plaintext highlighter-rouge">&lt;h1&gt;...&lt;/h1&gt;&lt;h2&gt;...&lt;/h2&gt;</code> would be illegal. In situations where you might want to do this, you can use a “blank tag” to wrap the code, e.g. <code class="language-plaintext highlighter-rouge">&lt;&gt;&lt;h1&gt;...&lt;/h1&gt;&lt;h2&gt;...&lt;/h2&gt;&lt;/&gt;</code></li>
+  <li>Every React component <strong>must</strong> return the JSX to be rendered.</li>
+</ul>
+
+<h3 id="exercise-4">Exercise 4</h3>
+
+<ul>
+  <li>
+    <p>Try out the above example. Write an <code class="language-plaintext highlighter-rouge">index.js</code> to render the <code class="language-plaintext highlighter-rouge">&lt;App&gt;</code> component to a root <code class="language-plaintext highlighter-rouge">div</code>, as before.</p>
+  </li>
+  <li>
+    <p>Pass in the name and age as props, rather than hardcoding them, as above.</p>
+  </li>
+</ul>
+
+<h3 id="inline-styles-in-react">Inline Styles in React</h3>
+
+<p>An important point about JSX is that inline styles are specified with a different syntax.</p>
+
+<pre>
+&lt;p style=&#123;&#123; backgroundColor: 'yellow' &#125;&#125;&gt;
+</pre>
+
+<p>The outer curly brackets indicate that we are embedding JavaScript within HTML within JSX, as before. The inner brackets indicate that we are defining a <strong>JavaScript object</strong> to represent the style, rather than ordinary CSS. The same rules as normal for accessing styles within JavaScript apply, i.e. style properties with dashes become camel case, for example <code class="language-plaintext highlighter-rouge">background-color</code> becomes <code class="language-plaintext highlighter-rouge">backgroundColor</code>.</p>
+
+<h3 id="exercise-5">Exercise 5</h3>
+
+<p>In your <code class="language-plaintext highlighter-rouge">Welcome</code> component, add code to style the <code class="language-plaintext highlighter-rouge">div</code> according to a colour defined in a prop <code class="language-plaintext highlighter-rouge">color</code>. Modify your <code class="language-plaintext highlighter-rouge">index.js</code> so you pass the <code class="language-plaintext highlighter-rouge">color</code> prop into the component.</p>
+
+<h2 id="wrapping-one-component-into-another">Wrapping one component into another</h2>
+
+<p>Hmmm, why would you ever want to do such a thing? Here is an example of a component:</p>
+
+<p><img src="https://nwcourses.github.io/COM623/old/week_2/assets/completed_view.png\" alt="" /></p>
+
+<p>Can you see the border is slightly raised, creating a tile effect? This effect will need to be re-created throughout our application. As such, we should abstract this tile into a component. We can do this by creating a compositional component.</p>
+
+<h2 id="compositional-components">Compositional components</h2>
+
+<iframe src="https://solent.cloud.panopto.eu/Panopto/Pages/Embed.aspx?id=052d879f-385a-4c8e-a0f4-ac5201289fe6&amp;autoplay=false&amp;offerviewer=true&amp;showtitle=true&amp;showbrand=false&amp;start=1946&amp;interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen="" allow="autoplay"></iframe>
+
+<p>Let’s create a wrap-around component - also known as a compositional component. Create a new file <code class="language-plaintext highlighter-rouge">Components/Tile.js</code>. Add the following code:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Tile</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="nx">children</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">props</span><span class="p">;</span> <span class="c1">// destructuring again, so 'children' refers to 'props.children'</span>
+
+  <span class="c1">// Specify the style as a JavaScript object, again</span>
+  <span class="kd">const</span> <span class="nx">divStyle</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">boxShadow</span><span class="p">:</span> <span class="dl">"</span><span class="s2">0px 10px 20px rgba(31, 32, 65, 0.05)</span><span class="dl">"</span><span class="p">,</span>
+  <span class="p">};</span>
+
+  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">divStyle</span><span class="p">}</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">children</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/div&gt;</span><span class="err">;
+</span><span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Tile</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>The goal of tile is to wrap it around another element or component, it would work like this: <code class="language-plaintext highlighter-rouge">&lt;Tile&gt; &lt;SomeElement/&gt; &lt;/Tile&gt;</code>. This can be achieved by taking advantage of the fact that React injects <code class="language-plaintext highlighter-rouge">&lt;SomeElement/&gt;</code> into the ‘children’ property of our <code class="language-plaintext highlighter-rouge">props</code> object. More generally, the <code class="language-plaintext highlighter-rouge">children</code> property of the <code class="language-plaintext highlighter-rouge">props</code> is <strong>an array of all the child components of a given React component</strong>.</p>
+
+<h3 id="exercise-6">Exercise 6</h3>
+
+<p>See if you can work out how to update <code class="language-plaintext highlighter-rouge">&lt;Welcome&gt;</code> so <code class="language-plaintext highlighter-rouge">&lt;Tile&gt;</code> is wrapped around it.</p>
+
+<h2 id="introduction-to-react-state">Introduction to React State</h2>
+
+<p>React components use the concept of state. A React component can store data it needs to do its job in a group of state variables, which can be retrieved when methods of the component are called. This is central to how React works. We store the application’s data in its state, and describe the components to be rendered using a mix of HTML and state variables. The result will be that when we update the state, the application will be automatically re-rendered to use the current values stored in the state. Thus, we do not have to manually update the UI each time the application’s data changes.</p>
+
+<p>For example here is a simple component which allows the user to enter a name and updates a greeting message with the most recent name that was entered. The name is stored in <strong>state</strong>.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">InteractiveGreeting</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span><span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="dl">"</span><span class="s2">No name</span><span class="dl">"</span><span class="p">);</span>
+
+    <span class="k">return</span><span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Enter</span> <span class="nx">your</span> <span class="nx">name</span><span class="o">&lt;</span><span class="sr">/h2</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">txtName</span><span class="dl">'</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="p">{</span><span class="nx">name</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">update</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">updateStateName</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">updateStateName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setName</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">txtName</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">InteractiveGreeting</span><span class="p">;</span>
+
+</code></pre></div></div>
+<p>To explore this in detail:
+The line:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span><span class="p">[</span><span class="nx">name</span><span class="p">,</span> <span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="dl">"</span><span class="s2">No name</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>sets up a state property called <code class="language-plaintext highlighter-rouge">name</code> and sets it up to initially contain the value “No name”. It also creates a function <code class="language-plaintext highlighter-rouge">setName()</code> which is used to update the state; this function is created for you automatically in the background. <code class="language-plaintext highlighter-rouge">React.useState()</code> always returns an array containing a state variable and a matching function to update it. Note the destructuring syntax:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span> <span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="p">....;</span>
+</code></pre></div></div>
+
+<p>This causes the array returned by React.useState() to be destructured into two individual variables, <code class="language-plaintext highlighter-rouge">name</code> and <code class="language-plaintext highlighter-rouge">setName</code>.</p>
+
+<p>Multiple state variables can be setup in this way, and each state variable has a corresponding set method to update that state variable.
+Note how the content of the <code class="language-plaintext highlighter-rouge">div</code> with the ID <code class="language-plaintext highlighter-rouge">hello</code> is set to the state variable <code class="language-plaintext highlighter-rouge">name</code>. The interesting thing here is that whenever the <code class="language-plaintext highlighter-rouge">name</code> property of the state changes, the <code class="language-plaintext highlighter-rouge">div</code> will be automatically updated, as <code class="language-plaintext highlighter-rouge">name</code> always refers to the current state. This shows how state can be more useful than just storing the name in a regular variable, in which case this auto-update would not happen. Essentially we are <strong>binding</strong> the <code class="language-plaintext highlighter-rouge">div</code> to the state variable <code class="language-plaintext highlighter-rouge">name</code>, ensuring that the <code class="language-plaintext highlighter-rouge">div</code> is always displaying the current name.</p>
+
+<p>But how do we update the state? Hopefully you can see that we handle a click event on the button within the component, and call a custom function <code class="language-plaintext highlighter-rouge">updateStateName()</code> when it’s clicked. If you look at this function (within our component), you can see that it uses <code class="language-plaintext highlighter-rouge">setName()</code> - the setter function we obtained from <code class="language-plaintext highlighter-rouge">React.useState()</code> - to update the state to the contents of the form field with the ID <code class="language-plaintext highlighter-rouge">txtName</code>.</p>
+
+<p>So the end result will be that the <code class="language-plaintext highlighter-rouge">div</code> keeps in sync with whatever the user enters in the text field. This automatic update of the UI to reflect current state is possibly the most fundamental principle of React.</p>
+
+<h3 id="event-handling-the-react-way">Event handling the React way</h3>
+
+<p>The above example included code to handle a click event on a button. In React, the convention used for event handling is to set up an event handler in the HTML rather than using <code class="language-plaintext highlighter-rouge">addEventListener()</code>. This is done in a component’s JSX, not the HTML of the web page, so the actual main HTML page remains free of JavaScript.</p>
+
+<p>Note also how the event is onClick, not onclick; React uses the convention for event handling of capitalising the first letter of the event type.</p>
+
+<p>The handler for <code class="language-plaintext highlighter-rouge">onClick</code> is the <code class="language-plaintext highlighter-rouge">updateStateName</code> function: as <code class="language-plaintext highlighter-rouge">updateStateName</code> is a variable within JSX, we have to surround it with braces.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">'button'</span> <span class="na">value=</span><span class="s">'update'</span> <span class="na">onClick=</span><span class="s">{updateStateName}</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<h3 id="exercise-7">Exercise 7</h3>
+
+<p>Try out the above example.</p>
+<ul>
+  <li>Change the <code class="language-plaintext highlighter-rouge">InteractiveGreeting</code> component so the default name is passed through as a prop.</li>
+  <li>Also allow the contents of the <code class="language-plaintext highlighter-rouge">h2</code> heading to be specified as a second prop.</li>
+</ul>
+
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

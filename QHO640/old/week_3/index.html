@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Week 3 - More on State | Course Notes</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Week 3 - More on State" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Course material" />
+<meta property="og:description" content="Course material" />
+<link rel="canonical" href="index.html" />
+<meta property="og:url" content="https://nwcourses.github.io/COM623/old/week_3/" />
+<meta property="og:site_name" content="Course Notes" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Week 3 - More on State" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Course material","headline":"Week 3 - More on State","url":"https://nwcourses.github.io/COM623/old/week_3/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="../../../assets/css/style.css%3Fv=d5062f5581830390b9c21268f82f9c13411b2030.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nwcourses.github.io/">Course Notes</a></h1>
+      
+
+      <h2 id="week-3---more-on-state">Week 3 - More on State</h2>
+
+<p>Last week you were introduced to React <em>state</em>, however there is more to look at. Some of this was covered in COM518 last year, however not all of you studied COM518 so it will be covered now.</p>
+
+<h3 id="implementing-an-onchange-event-handler">Implementing an onChange() event handler</h3>
+
+<p>Consider this new version of the <code class="language-plaintext highlighter-rouge">InteractiveGreeting</code> example from last week. As well as displaying the name in the <code class="language-plaintext highlighter-rouge">div</code> it also displays it in the input box.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">InteractiveGreeting</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span><span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="dl">"</span><span class="s2">No name</span><span class="dl">"</span><span class="p">);</span>
+
+    <span class="k">return</span><span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Enter</span> <span class="nx">your</span> <span class="nx">name</span><span class="o">&lt;</span><span class="sr">/h2</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">txtName</span><span class="dl">'</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">text</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="p">{</span><span class="nx">name</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">update</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">updateStateName</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">updateStateName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setName</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">txtName</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">InteractiveGreeting</span><span class="p">;</span>
+
+</code></pre></div></div>
+
+<p>If you try this out, you’ll notice that it is impossible to change the text in the text field. Why is this? The text field is tightly bound to the <code class="language-plaintext highlighter-rouge">name</code> property of the state, so unless the state changes, the text field will not change. More generally, any element within the component which references the state is tightly bound to the state and will not change unless the state changes. To implement an editable text field, you need to implement an <code class="language-plaintext highlighter-rouge">onChange()</code> event handler on the text field to update the state. The next example shows this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">InteractiveGreeting</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span><span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="dl">"</span><span class="s2">No name</span><span class="dl">"</span><span class="p">);</span>
+
+    <span class="k">return</span><span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Enter</span> <span class="nx">your</span> <span class="nx">name</span><span class="o">&lt;</span><span class="sr">/h2</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">txtName</span><span class="dl">'</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">text</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span> <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">updateStateName</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="p">{</span><span class="nx">name</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">update</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">updateStateName</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">updateStateName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setName</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">txtName</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">InteractiveGreeting</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<p>Note how the text field now has an <code class="language-plaintext highlighter-rouge">onChange</code> event handler, which is the <code class="language-plaintext highlighter-rouge">updateStateName()</code> function of the component. In <code class="language-plaintext highlighter-rouge">updateStateName()</code> we use the <code class="language-plaintext highlighter-rouge">setName()</code> method, remember that when we create the hook we obtain a series of variables, the state variable and a setter to update the state with.</p>
+
+<p>Note that you must use the setter method to update the state; do not modify the state variable directly.</p>
+
+<h2 id="displaying-lists-in-react">Displaying lists in React</h2>
+
+<p>Often you will have to iterate over some data structures, like the one above, to construct your React views, this is very easy to achieve in JSX.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">....</span>
+<span class="kd">function</span> <span class="nx">ListComponent</span><span class="p">()</span> 
+<span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
+    <span class="kd">const</span> <span class="nx">numbersList</span> <span class="o">=</span>  <span class="nx">numbers</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">number</span> <span class="o">=&gt;</span> <span class="p">(</span>
+          <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">number</span><span class="p">.</span><span class="nx">toString</span><span class="p">()}</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">number</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/li</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+    <span class="k">return</span> <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">numbersList</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/ul&gt;</span><span class="err">;
+</span><span class="p">}</span>
+<span class="p">....</span>
+</code></pre></div></div>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map">We can simply use an array map function (see above) to render array structured data into our views</a>.</p>
+
+<p>Here we are mapping an array of numbers into an array of <code class="language-plaintext highlighter-rouge">&lt;li&gt;</code> list items containing the number. This mapped array is stored in the variable <code class="language-plaintext highlighter-rouge">numbersList</code>. We are then returning a <code class="language-plaintext highlighter-rouge">&lt;ul&gt;</code> containing the list items from the component.</p>
+
+<p>Note also how each list item has a unique key, equal to the current number.  React uses this to keep track of which item in the list is which, if items in the list are modified or deleted. We don’t do this here, but nonetheless you should always give items in a rendered list of items a unique key.</p>
+
+<h2 id="larger-example---to-do-list">Larger Example - To Do List</h2>
+
+<p>The next example combines the discussion on state (last week) with the discussion on loops and arrays above, to implement a To Do list component by storing an array of tasks in state.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">taskId</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">TodoComponent</span><span class="p">({</span><span class="nx">title</span><span class="p">})</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">todo</span><span class="p">,</span> <span class="nx">setTodo</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">([]);</span>
+
+
+    <span class="kd">const</span> <span class="nx">todoHtml</span> <span class="o">=</span> <span class="nx">todo</span><span class="p">.</span><span class="nx">map</span> <span class="p">(</span> <span class="nx">task</span> <span class="o">=&gt;</span> <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">task</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">task</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/li&gt;</span><span class="se">)</span><span class="err">;
+</span>
+    <span class="k">return</span> <span class="p">(</span>
+            <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+
+            <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">title</span> <span class="o">||</span> <span class="dl">'</span><span class="s1">My Todo List</span><span class="dl">'</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/h1</span><span class="err">&gt;
+</span>
+            <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Add</span> <span class="nx">something</span> <span class="nx">to</span> <span class="nx">your</span> <span class="nx">todo</span> <span class="nx">list</span><span class="o">&lt;</span><span class="sr">/h2</span><span class="err">&gt;
+</span>            <span class="o">&lt;</span><span class="nx">fieldset</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">text</span><span class="dl">'</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">task</span><span class="dl">'</span> <span class="o">/&gt;</span>
+            <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">btn1</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">Go!</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">addTask</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>            <span class="o">&lt;</span><span class="sr">/fieldset</span><span class="err">&gt;
+</span>            <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>
+            <span class="nx">Here</span> <span class="nx">is</span> <span class="nx">your</span> <span class="nx">todo</span> <span class="nx">list</span><span class="p">:</span>
+            <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+            <span class="p">{</span><span class="nx">todoHtml</span><span class="p">}</span>
+            <span class="o">&lt;</span><span class="sr">/ul</span><span class="err">&gt;
+</span>
+            <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>        <span class="p">);</span>
+
+
+
+    <span class="kd">function</span> <span class="nx">addTask</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">tasks</span> <span class="o">=</span> <span class="nx">structuredClone</span><span class="p">(</span><span class="nx">todo</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">newTask</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">id</span><span class="p">:</span> <span class="nx">taskId</span><span class="o">++</span><span class="p">,</span>
+            <span class="na">name</span><span class="p">:</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">task</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span>
+        <span class="p">};</span>
+        <span class="nx">tasks</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">newTask</span><span class="p">);</span>
+        <span class="nx">setTodo</span><span class="p">(</span><span class="nx">tasks</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">TodoComponent</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>This is quite a bit more complex.</p>
+
+<p>Note how we:</p>
+
+<ul>
+  <li>Implement a method to add an task to the todo, <code class="language-plaintext highlighter-rouge">addTask()</code>. This runs when the user clicks the “add task” button.
+    <ul>
+      <li>In here we make a clone of the todo state object with <code class="language-plaintext highlighter-rouge">structuredClone()</code> (we cannot add directly to an array stored in state, we must make a clone, add to that, and reset the state to the clone).</li>
+      <li>We then create an object for the new task (<code class="language-plaintext highlighter-rouge">newTask</code>), containing fields for its ID and its name. The former is an auto-incrementing integer, the latter is what the user entered.</li>
+      <li>We then add the task to the clone of the todo (<code class="language-plaintext highlighter-rouge">tasks.push(newTask)</code>), before updating the todo variable in the state to the clone (with the new task added) with <code class="language-plaintext highlighter-rouge">setTodo()</code>.</li>
+    </ul>
+  </li>
+  <li>Use the <code class="language-plaintext highlighter-rouge">map()</code> method of todo to convert it to an array of JSX, ready for rendering, as in the last example. Each todo task is converted to an HTML list item (<code class="language-plaintext highlighter-rouge">li</code>), containing the task’s name.</li>
+</ul>
+
+<h2 id="components-containing-other-components-and-sharing-state-lifting-state-up">Components containing other components, and sharing state (“lifting state up”)</h2>
+
+<p>More complex components will contain <strong>sub-components</strong>. For example, imagine an extended version of the todo list in which there are <strong>two React components</strong>, one for adding a task, and one for showing the list of tasks.</p>
+
+<p>Why would you want to do this? You might want to use the component containing the todo list in <em>another application</em>, where the tasks are loaded in from the web rather than input by the user, for example. Or you might want the “input task” component to connect to a database and store the tasks in a database, rather than displaying them immediately.</p>
+
+<p>So by separating out the component into smaller, separate components, it makes each component <em>reusable</em> in different situations, and you can use one component without the other.</p>
+
+<p>What you are probably asking is: how can the contents of the first sub-component (the input task) be passed to the second (the list of tasks)? The recommended approach (see the React documentation) is to store information that needs to be shared between the two components as state of the <strong>parent</strong>. This is known as <strong>lifting state up</strong> (i.e. up to the parent component).</p>
+
+<p>This topic is discussed <a href="https://react.dev/learn/sharing-state-between-components">in the React documentation</a></p>
+
+<h3 id="lifting-state-up---a-simple-example">Lifting state up - a simple example</h3>
+
+<p>We will illustrate this with a simpler example. This example contains three components:</p>
+
+<ul>
+  <li>an <code class="language-plaintext highlighter-rouge">InputComponent</code> to allow the user to input a name;</li>
+  <li>a <code class="language-plaintext highlighter-rouge">GreetingComponent</code> to show a greeting to the user (using the name input in the <code class="language-plaintext highlighter-rouge">InputComponent</code>);</li>
+  <li>an <code class="language-plaintext highlighter-rouge">AppComponent</code> to manage the application as a whole and to store the state. The name entered in the <code class="language-plaintext highlighter-rouge">InputComponent</code> will be “lifted up” to the <code class="language-plaintext highlighter-rouge">AppComponent</code>.</li>
+</ul>
+
+<h4 id="appcomponent">AppComponent</h4>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">AppComponent</span><span class="p">({</span><span class="nx">title</span><span class="p">,</span> <span class="nx">defaultName</span><span class="p">})</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span> <span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="nx">defaultName</span><span class="p">);</span>
+
+
+    <span class="kd">function</span> <span class="nx">updateState</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">setName</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">InputComponent</span> <span class="nx">title</span><span class="o">=</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span> <span class="nx">passBackUserInput</span><span class="o">=</span><span class="p">{</span><span class="nx">updateState</span><span class="p">}</span> <span class="nx">name</span><span class="o">=</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span><span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">GreetingComponent</span> <span class="nx">name</span><span class="o">=</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">)</span>
+
+<span class="p">}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">AppComponent</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="inputcomponent">InputComponent</h4>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">InputComponent</span><span class="p">({</span><span class="nx">title</span><span class="p">,</span> <span class="nx">passBackUserInput</span><span class="p">})</span> <span class="p">{</span>
+
+
+    <span class="kd">function</span> <span class="nx">updateName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">n</span> <span class="o">=</span>  <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span>
+        <span class="nx">passBackUserInput</span><span class="p">(</span><span class="nx">n</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/h1</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">fieldset</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">text</span><span class="dl">'</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span> <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">updateName</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/fieldset</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">)</span>
+<span class="p">}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">InputComponent</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="greetingcomponent">GreetingComponent</h4>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">GreetingComponent</span><span class="p">({</span><span class="nx">name</span><span class="p">})</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">GreetingComponent</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>What is happening here? The diagram gives a general idea:</p>
+
+<p><img src="../../../images/liftingstate.png" alt="Lifting up state" /></p>
+
+<p>Firstly note the parent component, <code class="language-plaintext highlighter-rouge">AppComponent</code>. Note that the parent component stores the name in its state. Note how the name is passed down to the two sub-components, <code class="language-plaintext highlighter-rouge">InputComponent</code> and <code class="language-plaintext highlighter-rouge">GreetingComponent</code>, as their props. In a similar way to the text field value being tightly bound to the state, this will tightly bind the props of the sub-components to the state of the parent.</p>
+
+<p>In the <code class="language-plaintext highlighter-rouge">GreetingComponent</code> we display the name prop, which as we have seen, is tightly bound to the state of the parent because it’s passed down from the parent.</p>
+
+<p>The important thing with the <code class="language-plaintext highlighter-rouge">InputComponent</code> is that it needs a way to send the name the user entered back up to the <code class="language-plaintext highlighter-rouge">AppComponent</code>, because that is where the name is being stored in the state. To do this, we pass a <strong>method to update the state</strong> into the <code class="language-plaintext highlighter-rouge">InputComponent</code>, which can then call it. We do this by passing the <code class="language-plaintext highlighter-rouge">updateState()</code> method of <code class="language-plaintext highlighter-rouge">AppComponent</code> (which updates the state) into the <code class="language-plaintext highlighter-rouge">InputComponent</code> as a <em>prop</em> called <code class="language-plaintext highlighter-rouge">passBackUserInput</code>.</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nt">&lt;InputComponent</span> <span class="na">passBackUserInput=</span><span class="s">{updateState}</span> <span class="na">name=</span><span class="s">{name}/</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+<p>Thus, this prop, i.e. <code class="language-plaintext highlighter-rouge">passBackUserInput()</code>, can be called as a method from the <code class="language-plaintext highlighter-rouge">InputComponent</code>. This is precisely what happens when we encounter an onChange event; we first call the <code class="language-plaintext highlighter-rouge">InputComponent</code>’s own updateName() and then pass the name in the text field to passBackUserInput(). Since the passBackUserInput() property is set equal to the updateState() method in AppComponent, any  change to the name in the text field will update the state of the parent component. Then, since the <code class="language-plaintext highlighter-rouge">name</code> prop of the GreetingComponent is tightly bound to the parent’s state, any updates in the text field will update the <code class="language-plaintext highlighter-rouge">GreetingComponent</code>.</p>
+
+<h2 id="exercises">Exercises</h2>
+
+<ol>
+  <li>
+    <p>Try out the “lifting state up” example to get an idea of how it works.</p>
+  </li>
+  <li>
+    <p>Then, modify it to develop a To Do application which allows the user to input a new task in one component, and displays the list of To Do tasks in another component. This will be a combination of the “lifting state up” example and the “To Do List” example, above.</p>
+  </li>
+  <li>
+    <p><strong>More Advanced</strong>: Enhance your application so that it as two “To Do” lists, one for work and one for leisure. The form in the “input a new task” component should allow the user to choose which list to add the new task to.</p>
+  </li>
+  <li>
+    <p><strong>More Advanced</strong>: Available at <code class="language-plaintext highlighter-rouge">https://hikar.org/webapp/temp/artist</code> is a web API allowing clients to look up all songs by a particular artist. For example:</p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://hikar.org/webapp/temp/artist/Beatles
+</code></pre></div>    </div>
+    <p>Using a combination of lifting up state and AJAX (see <a href="https://nwcourses.github.io/COM518">last year</a> ) write a React app containing one component allowing the user to enter an artist, and another component to display the results.</p>
+  </li>
+</ol>
+
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

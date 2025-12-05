@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Week 11 - Further Firebase: More Firestore, using Firebase with React | Course Notes</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Week 11 - Further Firebase: More Firestore, using Firebase with React" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Course material" />
+<meta property="og:description" content="Course material" />
+<link rel="canonical" href="index.html" />
+<meta property="og:url" content="https://nwcourses.github.io/COM623/old/week_11/" />
+<meta property="og:site_name" content="Course Notes" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Week 11 - Further Firebase: More Firestore, using Firebase with React" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Course material","headline":"Week 11 - Further Firebase: More Firestore, using Firebase with React","url":"https://nwcourses.github.io/COM623/old/week_11/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="../../../assets/css/style.css%3Fv=d5062f5581830390b9c21268f82f9c13411b2030.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nwcourses.github.io/">Course Notes</a></h1>
+      
+
+      <h1 id="week-11---further-firebase-more-firestore-using-firebase-with-react">Week 11 - Further Firebase: More Firestore, using Firebase with React</h1>
+
+<p>This week we will look at using React and Firebase together. We will also finish looking at Firestore, by considering <em>update</em> and <em>delete</em> operations and look a little more at Firestore rules.</p>
+
+<p><strong>Credit</strong>: some of this material (particularly the section on using React and Firebase) is based on original material by Joe Appleton, who used to run this module.</p>
+
+<h2 id="update-and-delete-operations-in-firestore">Update and delete operations in Firestore</h2>
+
+<p>Last week we looked at how to create and retrieve data in Firestore. This week we will look at <em>update</em> and <em>delete</em> operations, which are a little more complex in their implementation. There are two general approaches to performing updates and deletes:</p>
+
+<ul>
+  <li>
+    <p><em>Transactions</em>. These are used in cases where we query data (to obtain the latest data) and update the current data, where the new value for the data is dependent on the old value. A good example would be reducing the quantity in stock of a song, or “liking” a point of interest. In the former, we take the current quantity and reduce it by 1, while in the latter, we take the current number of likes and increase it by 1.</p>
+  </li>
+  <li>
+    <p><em>Batched writes</em>. These are used when we need to perform updates which are not dependent on existing data. A good example would be updating the details of a song, such as changing its chart position, or price.</p>
+  </li>
+</ul>
+
+<h3 id="transactions">Transactions</h3>
+
+<p>Here is an example of the use of a Firestore transaction.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nx">likePoi</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">docRef</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="dl">"</span><span class="s2">pointsofinterest</span><span class="dl">"</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
+
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="k">await</span> <span class="nx">runTransaction</span><span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="k">async</span><span class="p">(</span><span class="nx">transaction</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">doc</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">transaction</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">docRef</span><span class="p">);</span>
+            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">doc</span><span class="p">.</span><span class="nx">exists</span><span class="p">())</span> <span class="p">{</span>
+                <span class="k">throw</span><span class="p">(</span><span class="s2">`POI with ID </span><span class="p">${</span><span class="nx">id</span><span class="p">}</span><span class="s2"> does not exist!`</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="kd">const</span> <span class="nx">newLikes</span> <span class="o">=</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">data</span><span class="p">().</span><span class="nx">likes</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+
+            <span class="nx">transaction</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">docRef</span><span class="p">,</span> <span class="p">{</span> <span class="na">likes</span><span class="p">:</span> <span class="nx">newLikes</span> <span class="p">}</span> <span class="p">);</span>
+            <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">`likes</span><span class="p">${</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">newLikes</span><span class="p">;</span>
+        <span class="p">});</span>
+    <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">alert</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Note that:</p>
+
+<ul>
+  <li>We first obtain a <em>document reference</em> (object of type <code class="language-plaintext highlighter-rouge">DocumentReference</code>, containing a reference to a given document in the collection):</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">docRef</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="dl">"</span><span class="s2">pointsofinterest</span><span class="dl">"</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li>We then start a transaction with <code class="language-plaintext highlighter-rouge">runTransaction</code>. We supply our database object and a callback which runs when the transaction has been opened. In this transaction we obtain the document that the <code class="language-plaintext highlighter-rouge">docRef</code> refers to, i.e.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">doc</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">transaction</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">docRef</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>and check it actually exists.</p>
+
+<ul>
+  <li>
+    <p>We then calculate the new likes; we can get the data associated with the document using the <code class="language-plaintext highlighter-rouge">data()</code> method.</p>
+  </li>
+  <li>
+    <p>We then call the transaction’s <code class="language-plaintext highlighter-rouge">update()</code> method to update the likes property to the new likes. Note that as well as <code class="language-plaintext highlighter-rouge">update()</code>, which updates selected properties, we can use <code class="language-plaintext highlighter-rouge">set()</code> to completely replace a document.</p>
+  </li>
+  <li>
+    <p>Finally we update an element on the UI with the new likes, so we get a live UI update. You could of course also use React here; below we discuss using React with Firebase.</p>
+  </li>
+</ul>
+
+<h3 id="batched-writes">Batched writes</h3>
+
+<p>Batched writes are an alternative to transactions in cases where the value of the updated data does not depend on the existing value. Here is an example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nx">updateStudent</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">newName</span><span class="p">,</span> <span class="nx">newCourse</span><span class="p">,</span> <span class="nx">newMark</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">docRef</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="dl">"</span><span class="s2">students</span><span class="dl">"</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">docum</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getDoc</span><span class="p">(</span><span class="nx">docRef</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">docum</span><span class="p">.</span><span class="nx">data</span><span class="p">())</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">batch</span> <span class="o">=</span> <span class="nx">writeBatch</span><span class="p">(</span><span class="nx">db</span><span class="p">);</span>
+            <span class="nx">batch</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">docRef</span><span class="p">,</span> <span class="p">{</span>
+                <span class="na">name</span><span class="p">:</span> <span class="nx">newName</span><span class="p">,</span>
+                <span class="na">course</span><span class="p">:</span> <span class="nx">newCourse</span><span class="p">,</span>
+                <span class="na">mark</span><span class="p">:</span> <span class="nx">newMark</span>
+            <span class="p">}</span> <span class="p">);</span>
+            <span class="k">await</span> <span class="nx">batch</span><span class="p">.</span><span class="nx">commit</span><span class="p">();</span>
+            <span class="nx">alert</span><span class="p">(</span><span class="s2">`Record updated successfully.`</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">alert</span><span class="p">(</span><span class="dl">'</span><span class="s1">That document does not exist.</span><span class="dl">'</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">alert</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>We again obtain a document reference and then a document. We check that the document has data in it (which it will not if the ID does not exist) by checking that the <code class="language-plaintext highlighter-rouge">data() </code>method of our document returns a non-null value.</p>
+
+<p>Then we start a <em>batched update</em> with the <code class="language-plaintext highlighter-rouge">writeBatch()</code> function. You can put smultiple updates or deletes inside one single batched update, and then commit it at the end with <code class="language-plaintext highlighter-rouge">commit()</code>. Here, we are again performing an <code class="language-plaintext highlighter-rouge">update()</code> to update selected properties of the student document. We could equally well use <code class="language-plaintext highlighter-rouge">set()</code> to completely replace the document, or <code class="language-plaintext highlighter-rouge">delete()</code> to delete it.</p>
+
+<h2 id="firebase-and-react">Firebase and React</h2>
+
+<h3 id="creating-custom-hooks">Creating Custom Hooks</h3>
+
+<p>You have already seen and used Hooks. See <a href="../week_5/index.html">week 5</a>. It makes sense to use a custom Hook to setup the Firebase functionality as we can call it when we load the component.</p>
+
+<p>Create the file: <code class="language-plaintext highlighter-rouge">useAuth.js</code>:</p>
+
+<ul>
+  <li>Add the following code:</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">import</span> <span class="p">{</span> 
+    <span class="nx">getAuth</span><span class="p">,</span> 
+    <span class="nx">createUserWithEmailAndPassword</span><span class="p">,</span> 
+    <span class="nx">signInWithEmailAndPassword</span><span class="p">,</span> 
+    <span class="nx">onAuthStateChanged</span><span class="p">,</span> 
+    <span class="nx">updateProfile</span><span class="p">,</span>
+<span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">firebase/auth</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">useAuth</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">user</span><span class="p">,</span> <span class="nx">setUser</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+
+    <span class="c1">// Initialize Firebase Auth</span>
+
+    <span class="kd">const</span> <span class="nx">auth</span> <span class="o">=</span> <span class="nx">getAuth</span><span class="p">();</span>
+
+    
+    <span class="nx">useEffect</span><span class="p">(</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">onAuthStateChanged</span><span class="p">(</span> <span class="nx">auth</span><span class="p">,</span> <span class="nx">user</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">setUser</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+        <span class="p">}</span> <span class="p">)</span>
+    <span class="p">},</span> <span class="p">[]</span> <span class="p">);</span>
+
+    <span class="k">async</span> <span class="kd">function</span> <span class="nx">signup</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">userCredential</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">createUserWithEmailAndPassword</span><span class="p">(</span><span class="nx">auth</span><span class="p">,</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">);</span>
+            <span class="c1">// Signed up </span>
+            <span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">userCredential</span><span class="p">.</span><span class="nx">user</span><span class="p">;</span>
+            <span class="nx">alert</span><span class="p">(</span><span class="s2">`signed up: ID=</span><span class="p">${</span><span class="nx">user</span><span class="p">.</span><span class="nx">uid</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+            <span class="nx">alert</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">uid</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">profile</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">updateProfile</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="p">{</span>
+                <span class="na">displayName</span><span class="p">:</span> <span class="nx">name</span>
+            <span class="p">});</span>
+          <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span>  <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">errorCode</span> <span class="o">=</span> <span class="nx">error</span><span class="p">.</span><span class="nx">code</span><span class="p">;</span>
+            <span class="kd">const</span> <span class="nx">errorMessage</span> <span class="o">=</span> <span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">;</span>
+            <span class="nx">alert</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">errorCode</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">errorMessage</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+          <span class="p">}</span>
+
+    <span class="p">}</span>
+
+    <span class="k">async</span> <span class="kd">function</span> <span class="nx">login</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">userCredential</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">signInWithEmailAndPassword</span><span class="p">(</span><span class="nx">auth</span><span class="p">,</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">userCredential</span><span class="p">.</span><span class="nx">user</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">alert</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">code</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">async</span> <span class="kd">function</span> <span class="nx">logout</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="k">await</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">signOut</span><span class="p">();</span>
+        <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">alert</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">code</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{</span> <span class="nx">signup</span><span class="p">,</span> <span class="nx">login</span><span class="p">,</span> <span class="nx">logout</span><span class="p">,</span> <span class="nx">user</span> <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">useAuth</span><span class="p">;</span>
+</code></pre></div></div>
+<p>What’s this doing? It’s a hook which returns the various Firebase functions for user management: signup, login and logout. Thus it allows our React code to hook into the Firebase functionality. It also stores the current user as state (updating when authentication state changes); as we did in our original custom Hook, we also return a reference to the <code class="language-plaintext highlighter-rouge">user</code> state variable so that it can be used in our React components.</p>
+
+<p>Note how we put <code class="language-plaintext highlighter-rouge">onAuthStateChanged()</code> in an Effect. This is to prevent this event handler being setup multiple times, leading to duplicate event handlers, each time we re-render.</p>
+
+<p>We could then use the Hook in a React component:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">initializeApp</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">firebase/app</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">useAuth</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./useAuth</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Login</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Login</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Logout</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Logout</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">ProtectedContent</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./ProtectedContent</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">App</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useRef</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+
+    <span class="c1">// Your web app's Firebase configuration</span>
+    <span class="kd">const</span> <span class="nx">firebaseConfig</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="na">apiKey</span><span class="p">:</span> <span class="dl">"</span><span class="s2">xxxxxx</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">authDomain</span><span class="p">:</span> <span class="dl">"</span><span class="s2">xxxxxx</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">projectId</span><span class="p">:</span> <span class="dl">"</span><span class="s2">xxxxxx</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">storageBucket</span><span class="p">:</span> <span class="dl">"</span><span class="s2">xxxxxx</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">messagingSenderId</span><span class="p">:</span> <span class="dl">"</span><span class="s2">xxxxxx</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">appId</span><span class="p">:</span> <span class="dl">"</span><span class="s2">xxxxxx</span><span class="dl">"</span>
+   <span class="p">};</span>
+
+   <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">app</span><span class="p">.</span><span class="nx">current</span><span class="p">)</span> <span class="nx">app</span><span class="p">.</span><span class="nx">current</span> <span class="o">=</span> <span class="nx">initializeApp</span><span class="p">(</span><span class="nx">firebaseConfig</span><span class="p">);</span>
+
+   <span class="kd">const</span> <span class="p">{</span> <span class="nx">login</span><span class="p">,</span> <span class="nx">logout</span><span class="p">,</span> <span class="nx">user</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useAuth</span><span class="p">();</span>
+
+   <span class="k">async</span> <span class="kd">function</span> <span class="nx">loginClickHandler</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">await</span> <span class="nx">login</span><span class="p">(</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">email</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">,</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">password</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Firebase</span><span class="o">/</span><span class="nx">React</span><span class="o">&lt;</span><span class="sr">/h2</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">user</span> <span class="o">==</span> <span class="kc">null</span> <span class="p">?</span> 
+            <span class="o">&lt;</span><span class="nx">Login</span> <span class="nx">clickHandler</span><span class="o">=</span><span class="p">{</span><span class="nx">loginClickHandler</span><span class="p">}</span><span class="sr">/&gt;:</span><span class="err"> 
+</span>            <span class="o">&lt;&gt;&lt;</span><span class="nx">ProtectedContent</span> <span class="o">/&gt;&lt;</span><span class="nx">Logout</span> <span class="nx">clickHandler</span><span class="o">=</span><span class="p">{</span><span class="nx">logout</span><span class="p">}</span><span class="sr">/&gt;&lt;/</span><span class="o">&gt;</span> 
+        <span class="p">}</span><span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>  <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+<p>Note how we initialise Firebase inside our <code class="language-plaintext highlighter-rouge">App</code> component, but store the Firebase app as a <em>ref</em> so that it’s preserved across multiple-renders.</p>
+
+<p>Note also how we obtain our Firebase user management functions from the <code class="language-plaintext highlighter-rouge">useAuth()</code> hook, as well as the <code class="language-plaintext highlighter-rouge">user</code> object representing the currently logged-in user.</p>
+
+<p>Note how the JSX contains a test to see whether <code class="language-plaintext highlighter-rouge">user</code> is null. If it is, the user isn’t logged in so we show a <code class="language-plaintext highlighter-rouge">Login</code> component (not shown, but would contain a login form). If the user is logged in, we show some protected content as well as a <code class="language-plaintext highlighter-rouge">Logout</code> component (again, not shown, but would contain a logout button).</p>
+
+<h2 id="using-firebase-in-nextjs">Using Firebase in Next.js</h2>
+
+<p>If you use client components in Next.js, you can use the same kind of patterns as in plain React, as shown above.</p>
+
+<p>Server components in Next.js can also work with Firebase. In this case, the best approach is to store your Firebase objects in a module which can be imported into Next components.</p>
+
+<p>When using Next.js <em>do not try to use Firebase objects (e.g the <code class="language-plaintext highlighter-rouge">app</code> or the <code class="language-plaintext highlighter-rouge">auth</code> object) in both client and server components. They will be treated as separate Firebase objects and will be inconsistent</em>, for example if you login via a server-side <code class="language-plaintext highlighter-rouge">auth</code> object, the <code class="language-plaintext highlighter-rouge">auth</code> object client-side will still be in an unauuthenticated state. If using server components it’s recommended to store the Firebase objects server-side for security reasons.</p>
+
+<p>The best place to put your Firebase objects is in a separate module, and export them so they can be used in different components and server actions. For example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// app/firebase/setup.js</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">initializeApp</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">firebase/app</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">getAuth</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">firebase/auth</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="c1">// Your web app's Firebase configuration</span>
+<span class="kd">const</span> <span class="nx">firebaseConfig</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="p">...</span>
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">app</span> <span class="o">=</span>  <span class="nx">initializeApp</span><span class="p">(</span><span class="nx">firebaseConfig</span><span class="p">);</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">auth</span> <span class="o">=</span> <span class="nx">getAuth</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>Note here how we export both the Firebase app <code class="language-plaintext highlighter-rouge">app</code> and the auth object <code class="language-plaintext highlighter-rouge">auth</code>.</p>
+
+<p>We can then import one or both by selecting them in <code class="language-plaintext highlighter-rouge">import</code> statements, e.g. one of the following:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">app</span><span class="p">,</span> <span class="nx">auth</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/firebase/setup</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">app</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/firebase/setup</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">auth</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/firebase/setup</span><span class="dl">'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Example of a server component which uses the exported <code class="language-plaintext highlighter-rouge">auth</code> object to display either a <code class="language-plaintext highlighter-rouge">Login</code> or <code class="language-plaintext highlighter-rouge">Logout</code> component:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">login</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/actions/login</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">logout</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/actions/logout</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Login2</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/ui/Login2</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Logout2</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/ui/Logout2</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">ProtectedContent</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/ui/ProtectedContent</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">auth</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/firebase/setup</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Auth</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="k">return</span><span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">auth</span><span class="p">.</span><span class="nx">currentUser</span> <span class="p">?</span> <span class="p">&lt;&gt;&lt;</span><span class="nc">ProtectedContent</span> <span class="p">/&gt;&lt;</span><span class="nc">Logout2</span> <span class="na">action</span><span class="p">=</span><span class="si">{</span><span class="nx">logout</span><span class="si">}</span> <span class="p">/&gt;&lt;/&gt;</span> <span class="p">:</span> <span class="p">&lt;</span><span class="nc">Login2</span> <span class="na">action</span><span class="p">=</span><span class="si">{</span><span class="nx">login</span><span class="si">}</span> <span class="p">/&gt;</span> <span class="si">}</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">)</span>
+
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Auth</span><span class="p">;</span>
+</code></pre></div></div>
+<p>Example of a server action to handle login:</p>
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use server</span><span class="dl">"</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">signInWithEmailAndPassword</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">firebase/auth</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">auth</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/firebase/setup</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">redirect</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">next/navigation</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">login</span><span class="p">(</span><span class="nx">formData</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">errorCode</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">userCredential</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">signInWithEmailAndPassword</span><span class="p">(</span><span class="nx">auth</span><span class="p">,</span> <span class="nx">formData</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">email</span><span class="dl">"</span><span class="p">),</span> <span class="nx">formData</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">password</span><span class="dl">"</span><span class="p">));</span>
+    <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Error</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+        <span class="nx">errorCode</span> <span class="o">=</span> <span class="nx">error</span><span class="p">.</span><span class="nx">code</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">// Note that '/' is the top-level route of our app</span>
+    <span class="nx">redirect</span><span class="p">(</span><span class="nx">errorCode</span> <span class="o">===</span> <span class="kc">null</span> <span class="p">?</span> <span class="dl">'</span><span class="s1">/</span><span class="dl">'</span> <span class="p">:</span> <span class="s2">`/?error=</span><span class="p">${</span><span class="nx">errorCode</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">login</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="exercise">Exercise</h2>
+
+<ol>
+  <li>
+    <p>Modify your “add song” functionality from last week so that each song added also contains a quantity in stock and price.</p>
+  </li>
+  <li>
+    <p>Add functionality to your Firebase app from last week to allow logged-in users to edit or delete a song. The form should have form fields for ID, new quantity, and new price. There should also be a <code>select</code> box to allow the user to choose between edit or delete. If the user chooses edit,  these three properties should be updated while keeping the rest of the song’s data in place. If they choose delete, the song with that ID should be deleted.</p>
+  </li>
+  <li>
+    <p>Convert your app to use <em>either</em> client-side React <em>or</em> Next.js with server-side components.</p>
+  </li>
+  <li>
+    <p>Add a “buy” button to each search result from your search form in your answer from Question 3 (i.e the React/Next.js version). This button should allow the user to buy a song, using a transaction. This should reduce the quantity of the selected song by one.</p>
+  </li>
+</ol>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>
