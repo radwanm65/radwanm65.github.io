@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Week 8 - Further Next.js | Course Notes</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Week 8 - Further Next.js" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Course material" />
+<meta property="og:description" content="Course material" />
+<link rel="canonical" href="index.html" />
+<meta property="og:url" content="https://nwcourses.github.io/COM623/old/week_8/" />
+<meta property="og:site_name" content="Course Notes" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Week 8 - Further Next.js" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Course material","headline":"Week 8 - Further Next.js","url":"https://nwcourses.github.io/COM623/old/week_8/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="../../../assets/css/style.css%3Fv=d5062f5581830390b9c21268f82f9c13411b2030.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nwcourses.github.io/">Course Notes</a></h1>
+      
+
+      <h1 id="week-8---further-nextjs">Week 8 - Further Next.js</h1>
+
+<p>This week we will look at some further features of Next.js.</p>
+
+<h2 id="further-organising-your-project">Further organising your project</h2>
+
+<p>As your project grows, it makes sense to start separating out content into its own folders, so that it’s better organised.</p>
+
+<p>There is no single way of doing this but according to the Next.js documentation there are some commonly recommended standards. These folders should be placed inside your <code class="language-plaintext highlighter-rouge">app</code> folder:</p>
+
+<p><code class="language-plaintext highlighter-rouge">actions</code> - server actions;</p>
+
+<p><code class="language-plaintext highlighter-rouge">api</code> - API endpoints;</p>
+
+<p><code class="language-plaintext highlighter-rouge">ui</code> - UI components which can be included in other components which handle routes.</p>
+
+<h3 id="the-jsconfigjson-config-file">The jsconfig.json config file</h3>
+
+<p>You can import these with paths relative to the top-level folder of your app, e.g.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="dl">'</span><span class="s1">app/ui/addsong.js</span><span class="dl">'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><strong>but only if you create, or edit, the configuration file <code class="language-plaintext highlighter-rouge">jsconfig.json</code></strong> (in the top-level folder of your app) to specify the <code class="language-plaintext highlighter-rouge">baseUrl</code> option,</p>
+
+<p>So you should create a <code class="language-plaintext highlighter-rouge">jsconfig.json</code> in your root folder which looks like this:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"baseUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"."</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This means that paths in <code class="language-plaintext highlighter-rouge">import</code> statements will be relative to the current folder (<code class="language-plaintext highlighter-rouge">.</code>), i.e. the root folder of your project.</p>
+
+<h2 id="a-more-complex-version-of-the-server-actions-app">A more complex version of the server actions app</h2>
+
+<p>We will now return to the server actions app (to add a new item to the database) from last week, but increase its complexity by <em>including a component from another component</em>.</p>
+
+<p>If we revisit our front-end to the server action from last week:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use client</span><span class="dl">"</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">createPoi</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./createpoi</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">AddPoi</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="k">return</span><span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>Add Poi<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="p">=</span><span class="si">{</span><span class="nx">createPoi</span><span class="si">}</span><span class="p">&gt;</span>
+        Name: <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="p">=</span><span class="s">'name'</span> <span class="na">id</span><span class="p">=</span><span class="s">'name'</span> <span class="p">/&gt;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        Type: <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="p">=</span><span class="s">'type'</span> <span class="na">id</span><span class="p">=</span><span class="s">'type'</span> <span class="p">/&gt;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        Location: <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="p">=</span><span class="s">'location'</span> <span class="na">id</span><span class="p">=</span><span class="s">'location'</span> <span class="p">/&gt;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="p">=</span><span class="s">'submit'</span> <span class="na">value</span><span class="p">=</span><span class="s">'Go!'</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">AddPoi</span><span class="p">;</span>
+
+</code></pre></div></div>
+
+<p>we can save it in the <code class="language-plaintext highlighter-rouge">ui</code> folder, allowing us to include it in another component.</p>
+
+<p>We can then include it as follows:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">AddPoi</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/ui/addpoi</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Page</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span><span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Welcome to PointsOfInterest, the top search for things to do when on holiday!<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">AddPoi</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Page</span><span class="p">;</span>
+</code></pre></div></div>
+<p>Note how we can simply import it from its location within <code class="language-plaintext highlighter-rouge">ui</code> and use it. We can also mark it as <code class="language-plaintext highlighter-rouge">"use client"</code> (a client side component) and use it within a server-side component, as we have done here. (the Page component will be server side rendered as it isn’t marked with <code class="language-plaintext highlighter-rouge">"use client"</code>.</p>
+
+<p>This can have some advantages. For example server actions can <strong>only be called by client-side components</strong>, so what if you wanted to include forms which call server actions from a server-side component? You couldn’t put it directly in the server-side component but you could <em>include client-side components containing the server action within the server-side component</em>. These would be processed by the browser and rendered client-side, even though the main component is rendered server-side.</p>
+
+<h3 id="server-actions-with-ajax">Server actions with AJAX</h3>
+
+<p>We can also implement server actions with an AJAX-based interface. So far, the server actions have involved a redirect but we need not do things that way. Using a trick with manipulating the URL, you can implement a server action making use of AJAX. Here is an example:</p>
+
+<p>First of all the <code class="language-plaintext highlighter-rouge">AjaxAddPoi</code> component, which we would place inside <code class="language-plaintext highlighter-rouge">ui</code>:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use client</span><span class="dl">"</span>
+
+<span class="k">import</span> <span class="p">{</span><span class="nx">useFormState</span><span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-dom</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">createPoi</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/actions/createPoi</span><span class="dl">'</span><span class="p">;</span>
+
+
+<span class="kd">function</span> <span class="nx">AjaxAddPoi</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">state</span><span class="p">,</span> <span class="nx">actionCreatePoi</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useFormState</span><span class="p">(</span><span class="nx">createPoi</span><span class="p">,</span> <span class="p">{</span><span class="na">id</span><span class="p">:</span> <span class="mi">0</span><span class="p">});</span>
+
+
+    <span class="k">return</span><span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>AJAX form<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+        ID: <span class="si">{</span> <span class="nx">state</span><span class="p">.</span><span class="nx">id</span> <span class="si">}</span>
+        <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="p">=</span><span class="si">{</span><span class="nx">actionCreatePoi</span><span class="si">}</span><span class="p">&gt;</span>
+        Location: <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="p">=</span><span class="s">'location'</span> <span class="na">id</span><span class="p">=</span><span class="s">'location'</span> <span class="p">/&gt;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        Type: <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="p">=</span><span class="s">'type'</span> <span class="na">id</span><span class="p">=</span><span class="s">'type'</span> <span class="p">/&gt;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="p">=</span><span class="s">'submit'</span> <span class="na">value</span><span class="p">=</span><span class="s">'Go!'</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">AjaxAddPoi</span>
+</code></pre></div></div>
+
+<p>then the <code class="language-plaintext highlighter-rouge">createPoi</code> action:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use server</span><span class="dl">"</span>
+<span class="k">import</span> <span class="nx">Database</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">better-sqlite3</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">createPoi</span><span class="p">(</span><span class="nx">prevState</span><span class="p">,</span> <span class="nx">formData</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Database</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()}</span><span class="s2">/assets/pointsofinterest.db`</span><span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">stmt</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="dl">"</span><span class="s2">INSERT INTO pointsofinterest(location,type) VALUES (?,?)</span><span class="dl">"</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">formData</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">location</span><span class="dl">"</span><span class="p">)</span><span class="o">==</span><span class="dl">""</span> <span class="o">||</span> <span class="nx">formData</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">type</span><span class="dl">"</span><span class="p">)</span><span class="o">==</span><span class="dl">""</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span> <span class="na">status</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Blank Data</span><span class="dl">"</span> <span class="p">};</span>
+    <span class="p">}</span>
+    <span class="kd">const</span> <span class="nx">info</span> <span class="o">=</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">run</span><span class="p">(</span><span class="nx">formData</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">location</span><span class="dl">'</span><span class="p">),</span> <span class="nx">formData</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">type</span><span class="dl">'</span><span class="p">));</span>
+    <span class="k">return</span> <span class="p">{</span> <span class="na">status</span><span class="p">:</span> <span class="dl">"</span><span class="s2">OK</span><span class="dl">"</span><span class="p">,</span> <span class="na">id</span><span class="p">:</span> <span class="nx">info</span><span class="p">.</span><span class="nx">lastInsertRowid</span> <span class="p">};</span>
+<span class="p">}</span> 
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">createPoi</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>How does this differ from the previous example? Note how the AJAX front end component uses <code class="language-plaintext highlighter-rouge">useFormState()</code>:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="p">[</span><span class="nx">state</span><span class="p">,</span> <span class="nx">actionCreatePoi</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useFormState</span><span class="p">(</span><span class="nx">createPoi</span><span class="p">,</span> <span class="p">{</span><span class="na">status</span><span class="p">:</span> <span class="dl">""</span><span class="p">});</span>
+</code></pre></div></div>
+<p>This takes an existing action (e.g <code class="language-plaintext highlighter-rouge">createPoi()</code>) and returns a new action set up to allow the action to update the <em>state</em> of the component. So the action can store its status (success or otherwise) in state, and this can be displayed on the front-end.</p>
+
+<p><code class="language-plaintext highlighter-rouge">useFormState()</code> is actually part of ReactDOM, not Next.js, so it’s available in plain React applications too. See <a href="https://react.dev/reference/react-dom/hooks/useFormState">here</a></p>
+
+<p>If we look at the <code class="language-plaintext highlighter-rouge">createPoi()</code> action now, it does not redirect, instead it <em>returns</em> a JavaScript object containing a status and other information. Also note that it takes an additional parameter of <code class="language-plaintext highlighter-rouge">prevState</code>, the previous state of the component. This return value will be used to update the state of the front-en dcomponent.</p>
+
+<p>So, back in the front-end component, note how we can use the state (<code class="language-plaintext highlighter-rouge">state</code>) to display information returned from the action. In other words, the state contains the object that was returned from the action.</p>
+
+<h2 id="links-in-nextjs">Links in Next.js</h2>
+
+<p>We can create links using the normal <code class="language-plaintext highlighter-rouge">&lt;a&gt;</code> tag in Next.js. However it’s recommended to use Next.js’s custom <code class="language-plaintext highlighter-rouge">&lt;Link&gt;</code> tag instead. When navigating to a new route, <code class="language-plaintext highlighter-rouge">&lt;Link&gt;</code> will only load those parts of the page which actually change from the current route to the new route, and not those which do not. (Routes might share a layout, for instance).</p>
+
+<h2 id="sublayouts">Sublayouts</h2>
+
+<p>It’s possible to create <em>sublayouts</em> for part of your application only - i.e. certain routes and their descendants. You do this by creating a new <code class="language-plaintext highlighter-rouge">layout.js</code> within a route folder. So, for example, if you place a <code class="language-plaintext highlighter-rouge">layout.js</code> within the <code class="language-plaintext highlighter-rouge">hittastic</code> folder, the <code class="language-plaintext highlighter-rouge">hittastic</code> route and its subroutes will all have that layout. Such routes would include</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">/hittastic</code></li>
+  <li><code class="language-plaintext highlighter-rouge">/hittastic/newsong</code></li>
+  <li><code class="language-plaintext highlighter-rouge">/hittastic/search</code></li>
+</ul>
+
+<p>etc.</p>
+
+<p>Here is an example of a sub-layout:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">import</span> <span class="dl">"</span><span class="s2">./pointsofinterest.css</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Link</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">next/link</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Layout</span><span class="p">({</span><span class="nx">children</span><span class="p">})</span> <span class="p">{</span>
+    <span class="k">return</span><span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="p">=</span><span class="s">'container'</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="p">=</span><span class="s">'nav'</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Link</span> <span class="na">href</span><span class="p">=</span><span class="s">'/pointsofinterest'</span><span class="p">&gt;</span>Main<span class="p">&lt;/</span><span class="nc">Link</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Link</span> <span class="na">href</span><span class="p">=</span><span class="s">'/pointsofinterest/search'</span><span class="p">&gt;</span>Search<span class="p">&lt;/</span><span class="nc">Link</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Link</span> <span class="na">href</span><span class="p">=</span><span class="s">'/pointsofinterest/add'</span><span class="p">&gt;</span>Add<span class="p">&lt;/</span><span class="nc">Link</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Link</span> <span class="na">href</span><span class="p">=</span><span class="s">'/pointsofinterest/about'</span><span class="p">&gt;</span>About<span class="p">&lt;/</span><span class="nc">Link</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="p">=</span><span class="s">'main'</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">children</span><span class="si">}</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Layout</span><span class="p">;</span> 
+</code></pre></div></div>
+
+<p>You should be able to see that this layout contains a navigation sidebar and a main content area. This layout will be rendered <em>inside your overall root layout</em> as a child of it. Meanwhile, any pages within this route or its subroutes will be treated as the <code class="language-plaintext highlighter-rouge">children</code> of this layout and, in this example, will be rendered inside the <code class="language-plaintext highlighter-rouge">div</code> with an ID of <code class="language-plaintext highlighter-rouge">main</code>.</p>
+
+<h2 id="search-without-json-apis---a-recommended-approach">Search without JSON APIs - A recommended approach</h2>
+
+<p>This example shows a recommended way to implement search in a Next.js application if we are not using a JSON-based API. It is shown in the example in the <a href="https://nextjs.org/learn/dashboard-app/adding-search-and-pagination">Learn Next.js tutorial</a> and is an alternative approach to lifting state up, which you have met already, as a method of implementing search.</p>
+
+<p>The example shows the use of the <code class="language-plaintext highlighter-rouge">next/navigation</code> module to allow the URL to be dynamically modified after the user enters a search term, triggering a re-render of the page component.</p>
+
+<p>We will start with the <code class="language-plaintext highlighter-rouge">page.js</code>:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Search</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/ui/search</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">SearchResults</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/ui/searchresults</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Page</span><span class="p">({</span><span class="nx">searchParams</span><span class="p">})</span> <span class="p">{</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Searching for <span class="si">{</span><span class="nx">searchParams</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">Search</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nc">SearchResults</span> <span class="na">type</span><span class="p">=</span><span class="si">{</span><span class="nx">searchParams</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Page</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>You can see that this contains two components, <code class="language-plaintext highlighter-rouge">Search</code> and <code class="language-plaintext highlighter-rouge">SearchResults</code>. The former will read in a point of interest type from the user and modify the URL, and the latter will show the search results. Note how the page component imports the other two components from within the <code class="language-plaintext highlighter-rouge">ui</code> folder (as discussed above), and reads in an poi from the query string (i.e <code class="language-plaintext highlighter-rouge">searchParams</code>). This is then sent to the <code class="language-plaintext highlighter-rouge">SearchResults</code> component which will search for, and display, all points of interest of this type.</p>
+
+<p>We’ll now look at the <code class="language-plaintext highlighter-rouge">Search</code> component. This gathers the point of interest type from the user.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">'</span><span class="s1">use client</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useSearchParams</span><span class="p">,</span> <span class="nx">usePathname</span><span class="p">,</span> <span class="nx">useRouter</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">next/navigation</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Search</span><span class="p">({</span><span class="nx">params</span><span class="p">})</span> <span class="p">{</span>
+    
+    <span class="kd">const</span> <span class="nx">searchParams</span> <span class="o">=</span> <span class="nx">useSearchParams</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">pathname</span> <span class="o">=</span> <span class="nx">usePathname</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">replace</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useRouter</span><span class="p">();</span>
+
+    <span class="k">async</span> <span class="kd">function</span> <span class="nx">handleSearch</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">type</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">type</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span>
+        <span class="kd">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span><span class="nx">searchParams</span><span class="p">);</span>
+        <span class="nx">params</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="dl">'</span><span class="s1">type</span><span class="dl">'</span><span class="p">,</span> <span class="nx">type</span><span class="p">);</span>
+        <span class="nx">replace</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">pathname</span><span class="p">}</span><span class="s2">?</span><span class="p">${</span><span class="nx">params</span><span class="p">.</span><span class="nx">toString</span><span class="p">()}</span><span class="s2">`</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        Point of Interest Type: <span class="p">&lt;</span><span class="nt">input</span> <span class="na">id</span><span class="p">=</span><span class="s">'type'</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="p">=</span><span class="s">'button'</span> <span class="na">value</span><span class="p">=</span><span class="s">'Go!'</span> <span class="na">onClick</span><span class="p">=</span><span class="si">{</span><span class="nx">handleSearch</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Search</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>This is mostly a standard React client side component. However note that the <code class="language-plaintext highlighter-rouge">handleSearch</code> does not actually do any server search. Instead it dynamically changes the URL using functions of the <code class="language-plaintext highlighter-rouge">next/navigation</code> module. As we saw, the top level component reads the poi from the query string and sends it to the <code class="language-plaintext highlighter-rouge">SearchResults</code> component, so the dynamic change of the URL will trigger a re-rendering of the top level component and will pass the poi to the <code class="language-plaintext highlighter-rouge">SearchResults</code> component.</p>
+
+<p>It’s the <code class="language-plaintext highlighter-rouge">SearchResults</code> component that actually performs the server search:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Database</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">better-sqlite3</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">SearchResults</span><span class="p">({</span><span class="nx">type</span><span class="p">})</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Database</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()}</span><span class="s2">/assets/pointsofinterest.db`</span><span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">stmt</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="dl">"</span><span class="s2">SELECT * FROM pointsofinterest WHERE type=?</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span><span class="nx">type</span><span class="p">]);</span>
+
+    <span class="kd">const</span> <span class="nx">output</span> <span class="o">=</span> <span class="nx">results</span><span class="p">.</span><span class="nx">map</span> <span class="p">(</span><span class="nx">pointofinterest</span><span class="o">=&gt;</span> <span class="p">&lt;</span><span class="nt">li</span> <span class="na">key</span><span class="p">=</span><span class="si">{</span><span class="nx">pointofinterest</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">pointofinterest</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span> at <span class="si">{</span><span class="nx">pointofinterest</span><span class="p">.</span><span class="nx">location</span><span class="si">}</span>, type <span class="si">{</span><span class="nx">pointofinterest</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span> <span class="p">);</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;&lt;</span><span class="nt">ul</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">output</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">SearchResults</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>You can see how this takes in a poi, performs an SQL query and returns JSX of the results.</p>
+
+<h2 id="streaming">Streaming</h2>
+
+<p><em>See <a href="https://nextjs.org/learn/dashboard-app/streaming">Streaming</a> in the Next.js tutorial</em></p>
+
+<p>A particularly useful feature of Next.js is the ability to <em>stream</em> sub-components within a component. What does this mean? It means the page, or its layout, is fetched first and then sub-components within the page are fetched later. This is useful if some of the components are slow to load. It means that the user will see most of the page instantly, apart from the slower sub-components.</p>
+
+<p>Streaming is not enabled by default but we can easily enable it. There are two methods we can use:</p>
+
+<ul>
+  <li>The <code class="language-plaintext highlighter-rouge">loading.js</code> file</li>
+  <li>React’s <code class="language-plaintext highlighter-rouge">Suspense</code></li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">loading.js</code> will apply across the whole layout while a <code class="language-plaintext highlighter-rouge">Suspense</code> can be used to wrap a <em>specific component</em>.</p>
+
+<h3 id="loadingjs">loading.js</h3>
+
+<p>We can create a specific “Loading” component inside a <code class="language-plaintext highlighter-rouge">loading.js</code> file. This can be as simple as this:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Loading</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>Loading..<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Loading</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Any components which take time to load, will display the <code class="language-plaintext highlighter-rouge">Loading</code> component while they are loading.</p>
+
+<p>This is a simple example, we could also write a component to include a spinning wheel image, or similar.</p>
+
+<h3 id="using-suspenses">Using Suspenses</h3>
+
+<p><code class="language-plaintext highlighter-rouge">Suspense</code> is a React feature which allows us to wrap components with a fallback component which appears while the component is loading.</p>
+
+<p>Here is an example:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">SlowComponent</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/ui/slowcomponent</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">Suspense</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">SuspenseLoadingComponent</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/ui/suspenseloadingcomponent</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Page</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nc">Suspense</span> <span class="na">fallback</span><span class="p">=</span><span class="si">{</span><span class="p">&lt;</span><span class="nc">SuspenseLoadingComponent</span> <span class="p">/&gt;</span><span class="si">}</span><span class="p">&gt;&lt;</span><span class="nc">SlowComponent</span> <span class="p">/&gt;&lt;/</span><span class="nc">Suspense</span><span class="p">&gt;;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Page</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>You can see how we wrap <code class="language-plaintext highlighter-rouge">SlowComponent</code> with a <code class="language-plaintext highlighter-rouge">Suspense</code> component with a <code class="language-plaintext highlighter-rouge">fallback</code> prop of a temporary component to display while the <code class="language-plaintext highlighter-rouge">SlowComponent</code> is loading.</p>
+
+<h2 id="building-a-larger-application-with-multiple-components-and-passing-data-between-the-components">Building a larger application with multiple components, and passing data between the components</h2>
+
+<p><em>See <a href="https://nextjs.org/learn/dashboard-app/mutating-data">the tutorial</a></em></p>
+
+<p>We will now look at some techniques for building a larger application, with several inter-linked components. You might, for example, want to build a shopping application in which you can buy a product by clicking on a “buy” button. Or, a points of interest application in which you can review, or “like”, a particular POI. The key feature of this type of application is the user selects a given entity (product, POI, etc) and performs an operation on it.</p>
+
+<p>Server actions would be ideal to perform the operation (e.g. buy, like, etc). Also, server components are the most convenient way of doing the initial search for products, POIs etc. However, remember that server actions can <em>only be called from client components</em>. So how can we get round this?</p>
+
+<p>There are various approaches including:</p>
+
+<ul>
+  <li>
+    <p>developing an API to perform the search which returns JSON. We parse the JSON from a client component and then render JSX from the JSON, e.g. by storing the JSON data in state and then converting the state to JSX as we have seen several times when looking at React.</p>
+  </li>
+  <li>
+    <p>developing a server-side component to query the database and render the data. However, each item of data (e.g each Poi or product) is rendered <em>as its own sub-component</em>, a client component. This sub-component would receive the object representing the item as a prop, and then convert it to JSX and render it. The sub-component could be a client-side component as it does not need to perform any server-side tasks such as query a database. In this sub-component, we could create a form to allow the user to buy the product, like the Poi, etc. This form could contain the ID of the item of data as a hidden field, and be read from a server action. <strong>We will look at this approach in more detail now.</strong></p>
+  </li>
+</ul>
+
+<p>We’ll start with the server component, <code class="language-plaintext highlighter-rouge">SearchResults</code>. This uses a <code class="language-plaintext highlighter-rouge">PoiDetails</code> component to display the POI details.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Database</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">better-sqlite3</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">PoiDetails</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/ui/poidetails</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">SearchResults</span><span class="p">({</span><span class="nx">type</span><span class="p">})</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Database</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()}</span><span class="s2">/assets/pointsofinterest.db`</span><span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">stmt</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="dl">"</span><span class="s2">SELECT * FROM pointsofinterest WHERE type=?</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">type</span><span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">output</span> <span class="o">=</span> <span class="nx">results</span><span class="p">.</span><span class="nx">map</span> <span class="p">(</span> <span class="nx">poi</span> <span class="o">=&gt;</span> <span class="p">&lt;</span><span class="nc">PoiDetails</span> <span class="na">poi</span><span class="p">=</span><span class="si">{</span><span class="nx">poi</span><span class="si">}</span> <span class="p">/&gt;</span> <span class="p">);</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>Search for POIs of type <span class="si">{</span><span class="nx">type</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;&lt;</span><span class="nt">ul</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">output</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">SearchResults</span><span class="p">;</span>
+</code></pre></div></div>
+<p>We’ll now look at that <code class="language-plaintext highlighter-rouge">PoiDetails</code> client-side component. Note how it’s a client-side component and includes a “Like” button within a form with a server action. The POI ID is passed through the form within a <strong>hidden form field</strong>.</p>
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use client</span><span class="dl">"</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useFormState</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-dom</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">likePoi</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/actions/likePoi</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">PoiDetails</span><span class="p">({</span><span class="nx">poi</span><span class="p">})</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">state</span><span class="p">,</span> <span class="nx">alteredLikePoi</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useFormState</span><span class="p">(</span><span class="nx">likePoi</span><span class="p">,</span> <span class="p">{</span> <span class="na">status</span><span class="p">:</span> <span class="dl">""</span><span class="p">,</span> <span class="na">likes</span><span class="p">:</span> <span class="nx">poi</span><span class="p">.</span><span class="nx">likes</span> <span class="p">});</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">li</span> <span class="na">key</span><span class="p">=</span><span class="si">{</span><span class="nx">poi</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">poi</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span> is a <span class="si">{</span><span class="nx">poi</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span> in region <span class="si">{</span><span class="nx">poi</span><span class="p">.</span><span class="nx">region</span><span class="si">}</span>. Likes: <span class="si">{</span><span class="nx">state</span><span class="p">.</span><span class="nx">likes</span><span class="si">}</span>
+        <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="p">=</span><span class="si">{</span><span class="nx">alteredLikePoi</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="p">=</span><span class="s">'hidden'</span> <span class="na">name</span><span class="p">=</span><span class="s">'id'</span> <span class="na">value</span><span class="p">=</span><span class="si">{</span><span class="nx">poi</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="p">=</span><span class="s">'submit'</span> <span class="na">value</span><span class="p">=</span><span class="s">'Like!'</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span> 
+        Status: <span class="si">{</span><span class="nx">state</span><span class="p">.</span><span class="nx">status</span><span class="si">}</span>
+        <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">PoiDetails</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>There would also be a <code class="language-plaintext highlighter-rouge">likePoi</code> server action, this works in a similar way (see below) to the <code class="language-plaintext highlighter-rouge">createPoi</code> example above by returning an object updating the state, which is shown in the <code class="language-plaintext highlighter-rouge">PoiDetails</code> component.</p>
+
+<p>Note also how we take the likes from the <em>state</em>. This allows us to do an easy dynamic update of the likes when we click the “like” button. We initialise the state to contain a <code class="language-plaintext highlighter-rouge">likes</code> property equal to the existing likes of the Poi, and then, in the server action, we return an updated state (as we did in the <code class="language-plaintext highlighter-rouge">createPoi</code> example above) containing the updated likes, after we have liked the Poi. As the likes are displayed as the likes in the <em>state</em> (<code class="language-plaintext highlighter-rouge">state.likes</code>), the likes will live-update whenever we like a Poi.</p>
+
+<p>Here is what the <code class="language-plaintext highlighter-rouge">likePoi</code> server action might look like:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use server</span><span class="dl">"</span>
+
+<span class="k">import</span> <span class="nx">Database</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">better-sqlite3</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">likePoi</span><span class="p">(</span><span class="nx">prevState</span><span class="p">,</span> <span class="nx">formData</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Database</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()}</span><span class="s2">/assets/pointsofinterest.db`</span><span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">id</span><span class="dl">"</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">id</span> <span class="o">&amp;&amp;</span> <span class="nx">id</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">stmt</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="dl">"</span><span class="s2">UPDATE pointsofinterest SET likes=likes+1 WHERE id=?</span><span class="dl">"</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="p">{</span> <span class="nx">changes</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">run</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">changes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">stmt2</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="dl">"</span><span class="s2">SELECT likes from pointsofinterest WHERE id=?</span><span class="dl">"</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">row</span> <span class="o">=</span> <span class="nx">stmt2</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+            <span class="k">return</span> <span class="p">{</span> <span class="na">status</span><span class="p">:</span> <span class="dl">"</span><span class="s2">OK</span><span class="dl">"</span><span class="p">,</span> <span class="na">likes</span><span class="p">:</span> <span class="nx">likes</span> <span class="p">};</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="p">{</span> <span class="na">status</span><span class="p">:</span> <span class="s2">`Poi with ID </span><span class="p">${</span><span class="nx">id</span><span class="p">}</span><span class="s2"> not found`</span> <span class="p">};</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span> <span class="na">status</span><span class="p">:</span> <span class="s2">`Invalid ID </span><span class="p">${</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span> <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Note how it increases the likes and also does a SELECT statement to find the new likes, and returns the new likes in the object to be used as state - so that it can be displayed in the client-side <code class="language-plaintext highlighter-rouge">PoiDetails</code> component.</p>
+
+<h3 id="alternative-to-hidden-field---binding">Alternative to hidden field - binding</h3>
+
+<p>A slightly more elegant way of passing the ID across is to pass it as an <em>argument</em> to the server action. To do this, we use <em>binding</em> which we looked at last year. For example:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use client</span><span class="dl">"</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">useFormState</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-dom</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">likePoi</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/actions/likePoi</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">PoiDetails</span><span class="p">({</span><span class="nx">poi</span><span class="p">})</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">state</span><span class="p">,</span> <span class="nx">alteredLikePoi</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useFormState</span><span class="p">(</span><span class="nx">likePoi</span><span class="p">,</span> <span class="p">{</span> <span class="na">status</span><span class="p">:</span> <span class="dl">""</span><span class="p">,</span> <span class="na">likes</span><span class="p">:</span> <span class="nx">poi</span><span class="p">.</span><span class="nx">likes</span> <span class="p">});</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">li</span> <span class="na">key</span><span class="p">=</span><span class="si">{</span><span class="nx">poi</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">poi</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span> is a <span class="si">{</span><span class="nx">poi</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span> in region <span class="si">{</span><span class="nx">poi</span><span class="p">.</span><span class="nx">region</span><span class="si">}</span>. Likes: <span class="si">{</span><span class="nx">state</span><span class="p">.</span><span class="nx">likes</span><span class="si">}</span>
+        <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="p">=</span><span class="si">{</span><span class="nx">alteredLikePoi</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">poi</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span><span class="si">}</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="p">=</span><span class="s">'submit'</span> <span class="na">value</span><span class="p">=</span><span class="s">'Like!'</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span> 
+        Status: <span class="si">{</span><span class="nx">state</span><span class="p">.</span><span class="nx">status</span><span class="si">}</span>
+        <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">PoiDetails</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>We then read the bound value directly as a parameter of the server action, rather than via <code class="language-plaintext highlighter-rouge">FormData</code>:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use server</span><span class="dl">"</span>
+
+<span class="k">import</span> <span class="nx">Database</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">better-sqlite3</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">likePoi</span><span class="p">(</span><span class="nx">prevState</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Database</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()}</span><span class="s2">/assets/pointsofinterest.db`</span><span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nx">id</span> <span class="o">&amp;&amp;</span> <span class="nx">id</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">stmt</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="dl">"</span><span class="s2">UPDATE pointsofinterest SET likes=likes+1 WHERE id=?</span><span class="dl">"</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="p">{</span> <span class="nx">changes</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">run</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">changes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">stmt2</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="dl">"</span><span class="s2">SELECT likes from pointsofinterest WHERE id=?</span><span class="dl">"</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">row</span> <span class="o">=</span> <span class="nx">stmt2</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+            <span class="k">return</span> <span class="p">{</span> <span class="na">status</span><span class="p">:</span> <span class="dl">"</span><span class="s2">OK</span><span class="dl">"</span><span class="p">,</span> <span class="na">likes</span><span class="p">:</span> <span class="nx">likes</span> <span class="p">};</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="p">{</span> <span class="na">status</span><span class="p">:</span> <span class="s2">`Poi with ID </span><span class="p">${</span><span class="nx">id</span><span class="p">}</span><span class="s2"> not found`</span> <span class="p">};</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span> <span class="na">status</span><span class="p">:</span> <span class="s2">`Invalid ID </span><span class="p">${</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span> <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="error-handling">Error handling</h2>
+
+<p><em>See <a href="https://nextjs.org/learn/dashboard-app/error-handling">the Next.js tutorial</a></em></p>
+
+<p>Some of our components have featured testing for errors. However Next.js comes with some standard error-handling features, including:</p>
+
+<ul>
+  <li>
+    <p>providing an <code class="language-plaintext highlighter-rouge">error.js</code> component to be displayed whenever an error is thrown (e.g. via an exception)</p>
+  </li>
+  <li>
+    <p>providing custom 404 Not Found components via <code class="language-plaintext highlighter-rouge">not-found.js</code>.</p>
+  </li>
+</ul>
+
+<p>We’ll look at each of these in turn. Here is a page which searches for POIs by type.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Database</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">better-sqlite3</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">notFound</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">next/navigation</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Page</span><span class="p">({</span><span class="nx">searchParams</span><span class="p">})</span> <span class="p">{</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nx">searchParams</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="dl">""</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">"</span><span class="s2">Missing POI type!</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Database</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()}</span><span class="s2">/assets/pointsofinterest.db`</span><span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">stmt</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="dl">"</span><span class="s2">SELECT * FROM pointsofinterest WHERE type=?</span><span class="dl">"</span><span class="p">);</span> 
+    <span class="kd">const</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">searchParams</span><span class="p">.</span><span class="nx">type</span><span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nx">results</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">notFound</span><span class="p">();</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// Output the POIs (not shown)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Page</span><span class="p">;</span>
+
+</code></pre></div></div>
+<p>It has two possible errors:</p>
+<ul>
+  <li>the <code class="language-plaintext highlighter-rouge">type</code> query string parameter is empty;</li>
+  <li>there are no search results.</li>
+</ul>
+
+<p>The former error is a fundamental error so we throw an <code class="language-plaintext highlighter-rouge">Error</code> object containing an error message. The latter is a “no results” condition so we generate a 404 to indicate that; this is in agreement with the principles of REST that we saw last year.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">error.js</code> might look like this:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use client</span><span class="dl">"</span>
+
+<span class="kd">function</span> <span class="nb">Error</span><span class="p">({</span><span class="nx">error</span><span class="p">,</span> <span class="nx">reset</span><span class="p">})</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span>ERROR: <span class="si">{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span> <span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nb">Error</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Note how the <code class="language-plaintext highlighter-rouge">Error</code> component receives an <code class="language-plaintext highlighter-rouge">error</code> prop which is the <code class="language-plaintext highlighter-rouge">Error</code> object which was originally thrown, The <code class="language-plaintext highlighter-rouge">Error</code> object - see <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error">here</a> - has a <code class="language-plaintext highlighter-rouge">message</code> property containing the original error message.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">reset</code> prop is a function which can be used to reload the component, where this is appropriate.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">not-found.js</code> is very simple:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use client</span><span class="dl">"</span>
+
+<span class="kd">function</span> <span class="nx">NotFound</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>No songs by that artist!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">NotFound</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="exercise">Exercise</h2>
+
+<ul>
+  <li>
+    <p>Ensure you have completed the exercises from last week.</p>
+  </li>
+  <li>
+    <p>Develop a layout for HitTastic! which will apply to all routes and subroutes of `hittastic. This should include these links within a sidebar:</p>
+
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">/hittastic</code> : main HitTastic! page, including some information about HitTastic!</li>
+      <li><code class="language-plaintext highlighter-rouge">/hittastic/search</code> : search for a song.</li>
+      <li><code class="language-plaintext highlighter-rouge">/hittastic/add</code> : add a song.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Use the <code class="language-plaintext highlighter-rouge">Link</code> component for the links, and use this CSS to setup a sidebar and main content area:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">html</span><span class="o">,</span> <span class="nt">body</span> <span class="p">{</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#container</span> <span class="p">{</span>
+    <span class="nl">min-height</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+    <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="no">white</span><span class="p">;</span>
+    <span class="nl">font-size</span><span class="p">:</span> <span class="m">80%</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nf">#nav</span> <span class="p">{</span>
+    <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">20%</span><span class="p">;</span>
+    <span class="nl">background-color</span><span class="p">:</span> <span class="no">black</span><span class="p">;</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">white</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="nf">#main</span> <span class="p">{</span>
+    <span class="nl">background-color</span><span class="p">:</span> <span class="m">#00ffff</span><span class="p">;</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">black</span><span class="p">;</span>
+    <span class="nl">float</span><span class="p">:</span> <span class="nb">right</span><span class="p">;</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">80%</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">a</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">white</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#main</span> <span class="nt">a</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Create the <code class="language-plaintext highlighter-rouge">search</code> and <code class="language-plaintext highlighter-rouge">add</code> routes (you can use the work from last week to do this). Test it out, and go to the Developer Tools and specifically the Network Tab. Turn off “XHR” (AJAX) requests (so they cannot be seen) and navigate between the three routes. Do the requests appear in the Network tab?</p>
+
+<ul>
+  <li>Implement streaming for <code class="language-plaintext highlighter-rouge">hittastic</code> and all sub-routes, using a <code class="language-plaintext highlighter-rouge">loading.js</code> file. To prove it works, try writing a component with a path <code class="language-plaintext highlighter-rouge">/hittastic/slow</code> which simulates a slow loading, as follows, and link it to your sidebar.</li>
+</ul>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nx">Page</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="c1">// the pauser() function returns a promise which resolves with a timeout function which runs the "resolve" function after a given number of milliseconds. This will have an effect of pausing for that time.</span>
+    <span class="kd">function</span> <span class="nx">pauser</span><span class="p">(</span><span class="nx">milliseconds</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span> <span class="nx">resolve</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">milliseconds</span><span class="p">);</span>
+        <span class="p">}</span> <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// await the resolution of this promise in 3000 milliseconds</span>
+    <span class="k">await</span> <span class="nx">pauser</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Content loaded!<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;;</span>
+
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Page</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>Rewrite your “add song” functionality to use AJAX and <code class="language-plaintext highlighter-rouge">useFormState()</code>. Display the success, or otherwise, of the “add song” server action in the front-end UI via state. Include a check to make sure that the song details are not blank in the server action, and return an appropriate object to update the state with the error if so. Place your server action inside an <code class="language-plaintext highlighter-rouge">actions</code> folder within <code class="language-plaintext highlighter-rouge">app</code>.</p>
+  </li>
+  <li>
+    <p>Rewrite your Search functionality as follows:</p>
+
+    <ul>
+      <li>
+        <p>it should use three components, one page component, for the search form and one for the search results, with the search form component editing the query string and reloading the page, as shown in the example above. The search and search results components should be within the <code class="language-plaintext highlighter-rouge">ui</code> folder within <code class="language-plaintext highlighter-rouge">app</code>.</p>
+      </li>
+      <li>
+        <p>it should throw an error if the artist is blank (“”). Write a custom <code class="language-plaintext highlighter-rouge">error.js</code> component to handle this error.</p>
+      </li>
+      <li>
+        <p>it should then include a Buy button for each song. This Buy button should contact a <code class="language-plaintext highlighter-rouge">buySong</code> server action which reduces the quantity by one. The <code class="language-plaintext highlighter-rouge">buySong</code> action should check whether the song with that ID exists, communicating the error to the client if not. If successful it should do a SELECT statement to find the new quantity, and communicate that to the client. The client should then do a live-update of the new quantity.</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

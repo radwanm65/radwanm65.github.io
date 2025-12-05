@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Week 10 - Introduction to Firebase | Course Notes</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Week 10 - Introduction to Firebase" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Course material" />
+<meta property="og:description" content="Course material" />
+<link rel="canonical" href="index.html" />
+<meta property="og:url" content="https://nwcourses.github.io/COM623/old/week_10/" />
+<meta property="og:site_name" content="Course Notes" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Week 10 - Introduction to Firebase" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Course material","headline":"Week 10 - Introduction to Firebase","url":"https://nwcourses.github.io/COM623/old/week_10/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="../../../assets/css/style.css%3Fv=d5062f5581830390b9c21268f82f9c13411b2030.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nwcourses.github.io/">Course Notes</a></h1>
+      
+
+      <h1 id="week-10---introduction-to-firebase">Week 10 - Introduction to Firebase</h1>
+
+<p><em>(Credits: notes partly taken from the originals from Joe Appleton, with amendments and additional information added)</em></p>
+
+<p>This week we will introduce the world of serverless systems by taking a look at <em>Firebase</em>.</p>
+
+<h2 id="essential-reading">Essential Reading</h2>
+
+<ul>
+  <li><a href="https://firebase.google.com/docs/auth/web/start">Firebase Authentication</a></li>
+  <li><a href="https://firebase.google.com/docs/reference/js">Firebase JavaScript API reference</a></li>
+</ul>
+
+<h2 id="firebase">Firebase</h2>
+
+<p><em>This section is based on Joe Appleton’s notes but amendments have been made.</em></p>
+
+<p><a href="https://firebase.google.com/docs">Firebase</a> is a cloud infrastructure service that was acquired by Google in 2015 - it effectively is a sub-product suite of the <a href="https://cloud.google.com/">cloud platform</a>. At the time of writing, Firebase offers a range of web-enabled services, the most popular being:</p>
+
+<ul>
+  <li>Authentication</li>
+  <li>The Cloud Firestore Database</li>
+  <li>Cloud Functions</li>
+  <li>Hosting</li>
+</ul>
+
+<p>Firebase, and other infrastructure as a service platform, delegate the need to manage infrastructure away from the developer. This is particularly appealing if you are working in a small team, or, as a solo developer. What’s more, for our use, it has a very generous free tier.</p>
+
+<h2 id="getting-started">Getting Started</h2>
+
+<h2 id="task-1---setting-up-firebase">Task 1 - Setting Up Firebase</h2>
+
+<p>The purpose of this task is simply to set up a firebase account, create a project and register your first application - it is much easier than it sounds.</p>
+
+<p>First of all go to the <a href="https://firebase.google.com/">Firebase homepage</a>. Make sure you’re logged in with your Google (GMail) account (create one if you do not have one already).</p>
+
+<p><img src="https://nwcourses.github.io/COM623/images/firebase1.png" alt="Firebase Main Page" /></p>
+
+<p>Then, go to the Firebase Console. This is the main page for managing your Firebase applications:</p>
+
+<p><img src="https://nwcourses.github.io/COM623/images/firebase_console.png" alt="Firebase Console" /></p>
+
+<p>Next, create a project and name it whatever you like.
+Within your project, register a new web application, register a new web application, also name it what you like</p>
+
+<p><img src="https://nwcourses.github.io/COM623/images/firebase_project.png" alt="Create a Firebase project and register a web application" /></p>
+
+<p>This will then give you a screen such as that shown below, which will detail how to start your project. In particular, it gives you configuration code, including such things as your API key (keep private!) and project ID. You should copy and paste the sample code into your own code.</p>
+
+<p><img src="https://nwcourses.github.io/COM623/images/firebase_create_web_app.png" alt="Create a Firebase web app" /></p>
+
+<p>It will look something like this:</p>
+<pre><code class="language-JavaScript">const firebaseConfig = {
+    apiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    authDomain: "web-dev-practical.firebaseapp.com",
+    databaseURL: "https://web-dev-practical.firebaseio.com",
+    projectId: "web-dev-practical",
+    storageBucket: "web-dev-practical.appspot.com",
+    messagingSenderId: "1030945380946",
+    appId: "1:1030945380946:web:ae1bca104338f617df9d8b",
+    measurementId: "G-321SW2SPSG"
+};
+</code></pre>
+<p>Clone <a href="https://github.com/nwcourses/FirebaseStarter">this project</a></p>
+
+<p>This is an empty project with <code class="language-plaintext highlighter-rouge">package.json</code> and <code class="language-plaintext highlighter-rouge">webpack.config.js</code> setup for a basic Firebase project.</p>
+
+<p>Install with <code class="language-plaintext highlighter-rouge">npm install</code>. This is using Webpack Dev Server so run with <code class="language-plaintext highlighter-rouge">npm start</code>.</p>
+
+<p>Create an <code class="language-plaintext highlighter-rouge">index.js</code> file containing the sample code containing your Firebase configuration, shown above.</p>
+
+<p>We then need to create a Firebase app (of type <code class="language-plaintext highlighter-rouge">FirebaseApp</code>) with:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">initializeApp</span><span class="p">(</span><span class="nx">firebaseConfig</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="firebase-auth">Firebase Auth</h2>
+
+<p>The first Firebase product we will use is <em>Firebase Auth</em>. Firebase Auth gives you a standard secure and flexible cloud authentication service. You can choose to either use standard email/password authentication or third-party providers such as Google, Facebook, GitHub, etc.</p>
+
+<p>Setting up Firebase in our project is fairly straightforward. First, we need to import our dependencies, this is included in the sample code when you create a Web project.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">...</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">initializeApp</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">firebase/app</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">...</span>
+</code></pre></div></div>
+
+<p>Next however we need to import what we need from Firebase Auth. Add this import statement:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">getAuth</span><span class="p">,</span> <span class="nx">createUserWithEmailAndPassword</span><span class="p">,</span> <span class="nx">signInWithEmailAndPassword</span><span class="p">,</span> <span class="nx">onAuthStateChanged</span><span class="p">,</span> <span class="nx">updateProfile</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">firebase/auth</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+<p>This imports various functions we will use.</p>
+
+<p>To start using Firebase Auth we use the <code class="language-plaintext highlighter-rouge">getAuth()</code> function. This gives us an object of type <code class="language-plaintext highlighter-rouge">Auth</code> which is our general authentication manager.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">auth</span> <span class="o">=</span> <span class="nx">getAuth</span><span class="p">();</span>
+</code></pre></div></div>
+<h3 id="signing-up-a-user">Signing up a user</h3>
+
+<p>We can then signup a user with <code class="language-plaintext highlighter-rouge">createUserWithEmailAndPassword()</code>:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">userCredential</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">createUserWithEmailAndPassword</span><span class="p">(</span><span class="nx">auth</span><span class="p">,</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">);</span>
+    <span class="c1">// Signed up </span>
+    <span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">userCredential</span><span class="p">.</span><span class="nx">user</span><span class="p">;</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s2">`ID of new user: </span><span class="p">${</span><span class="nx">user</span><span class="p">.</span><span class="nx">uid</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span>  <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s2">`ERROR: Code: </span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">code</span><span class="p">}</span><span class="s2">, full message: </span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+<p>This function takes our original <code class="language-plaintext highlighter-rouge">Auth</code> object, an email and a password as parameters and returns a promise which will resolve once the user has been added to Firebase. It resolves with an object of type <code class="language-plaintext highlighter-rouge">UserCredential</code> representing the user credentials. This contains an object of type <code class="language-plaintext highlighter-rouge">User</code> (the <code class="language-plaintext highlighter-rouge">user</code> property) which itself contains a <code class="language-plaintext highlighter-rouge">uid</code> property containing a unique ID for this user.</p>
+
+<p>If there are any errors with the signup process (these can include invalid email address or insufficiently complex password) the promise will reject and the catch block will run.</p>
+
+<h3 id="logging-in">Logging in</h3>
+
+<p>Logging in has very similar logic to signing up:</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">userCredential</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">signInWithEmailAndPassword</span><span class="p">(</span><span class="nx">auth</span><span class="p">,</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">);</span>
+    <span class="c1">// We can get the user object again if we need it</span>
+    <span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">userCredential</span><span class="p">.</span><span class="nx">user</span><span class="p">;</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s2">`Logged in successfully! Email=</span><span class="p">${</span><span class="nx">user</span><span class="p">.</span><span class="nx">email</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span>  <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s2">`ERROR: Code: </span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">code</span><span class="p">}</span><span class="s2">, full message: </span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<h3 id="logging-out">Logging out</h3>
+
+<p>Logging out is very easy, just use the <code class="language-plaintext highlighter-rouge">signOut()</code> method of the <code class="language-plaintext highlighter-rouge">Auth</code> object:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span> <span class="p">{</span>
+    <span class="k">await</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">signOut</span><span class="p">();</span>
+<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">code</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="adding-a-display-name">Adding a display name</h3>
+
+<p>To add a display name (real name, e.g. Alan Smith) you can update the user profile. This can be done immediately after the code to signup a user:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">profile</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">updateProfile</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">displayName</span><span class="p">:</span> <span class="nx">name</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h3 id="detecting-changes-in-authentication-state">Detecting changes in authentication state</h3>
+
+<p>Firebase Auth allows us to easily detect changes in authentication state (i.e. logged out to logged in, and vice-versa). To do this, we specify a callback function which runs each time authentication state changes with <code class="language-plaintext highlighter-rouge">onAuthStateChanged()</code>:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">onAuthStateChanged</span><span class="p">(</span><span class="nx">auth</span><span class="p">,</span> <span class="nx">user</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">btnLogout</span><span class="dl">'</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">inline</span><span class="dl">'</span><span class="p">;</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">btnLogin</span><span class="dl">'</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">none</span><span class="dl">'</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">btnLogout</span><span class="dl">'</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">none</span><span class="dl">'</span><span class="p">;</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">btnLogin</span><span class="dl">'</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">inline</span><span class="dl">'</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+<p>The callback receives the original <code class="language-plaintext highlighter-rouge">Auth</code> object and a <code class="language-plaintext highlighter-rouge">user</code> object representing the currently logged-in user. This will be null if the user is logged out. In this example, we include logic to show or hide the login and logout buttons appropriately. If the user has logged in we show the logout button and hide the loginbn button, while if they have logged out we do the reverse.</p>
+
+<h3 id="detecting-if-a-user-is-logged-in-at-any-time">Detecting if a user is logged in at any time</h3>
+
+<p>We may wish to detect, at any time (not just when the user logs in or logs out), whether the user is currently logged in. We can use the <code class="language-plaintext highlighter-rouge">currentUser</code> property of the <code class="language-plaintext highlighter-rouge">Auth</code> object (type <code class="language-plaintext highlighter-rouge">User</code>) to do this. It will be null if the user is not logged in. For example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">btnAccessProtectedResource</span><span class="dl">'</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">e</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">alert</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">.</span><span class="nx">displayName</span> <span class="o">||</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">.</span><span class="nx">email</span><span class="p">}</span><span class="s2">, here is your confidential information ....`</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">alert</span><span class="p">(</span><span class="dl">"</span><span class="s2">Cannot access - please login.</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>This example also shows how you can get information about the logged-in user: the <code class="language-plaintext highlighter-rouge">currentUser</code> object includes <code class="language-plaintext highlighter-rouge">email</code> and <code class="language-plaintext highlighter-rouge">displayName</code> properties.</p>
+
+<h3 id="further-reading---third-party-providers">Further reading - Third party providers</h3>
+
+<p>As well as simple email/password authentication, you can use Firebase Auth to implement authentication with a third party provider such as GitHub, Google, Facebook, etc.</p>
+
+<p>For example, see the docs on <a href="https://firebase.google.com/docs/auth/web/github-auth">GitHub authentication</a> for the steps to undertake. You need to:</p>
+
+<ul>
+  <li>add GitHub authentication as an option in the Firebase console, and</li>
+  <li>register your Firebase app as a client app on GitHub.</li>
+</ul>
+
+<p>Once done, the code to sign in is as easy as:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">try</span> <span class="p">{</span>
+    <span class="c1">// Brings up a GitHub popup to sign in</span>
+    <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">signInWithPopup</span><span class="p">(</span><span class="nx">auth</span><span class="p">,</span> <span class="nx">provider</span><span class="p">);</span>
+
+    <span class="c1">// Get credentials</span>
+    <span class="kd">const</span> <span class="nx">credential</span> <span class="o">=</span> <span class="nx">GithubAuthProvider</span><span class="p">.</span><span class="nx">credentialFromResult</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+
+    <span class="c1">// A GitHub access token, which you can use if you want to interact with GitHub</span>
+    <span class="kd">const</span> <span class="nx">token</span> <span class="o">=</span> <span class="nx">credential</span><span class="p">.</span><span class="nx">accessToken</span><span class="p">;</span>
+
+    <span class="c1">// A User object representing the GitHub user</span>
+    <span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">user</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">code</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="cloud-firestore">Cloud Firestore</h2>
+
+<p>We will also start looking at <em>Cloud Firestore</em> - Firebase’s cloud database solution. This week we will look at basic search and insert and next week we will look at more advanced queries such as update and delete.</p>
+
+<p>Cloud Firestore is an example of a <em>NoSQL</em> database. NoSQL databases are databases which use methods other than SQL to access. A common type of NoSQL database is a <em>document database</em>, and Firestore is one such example. Document databases consist of:</p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">documents</code> representing specific records. These are stored in a JavaScript object-like structure with properties (equivalent to columns in an SQL database). Each document has a unique ID which can be used to access it, the equivalent of a primary key in a relational database. Documents can contain nested objects (maps; <a href="https://firebase.google.com/docs/firestore/data-model">see the documentation</a>).</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">collections</code> containing multiple documents. These are the equivalent of tables in SQL databases.</p>
+  </li>
+</ul>
+
+<p>If you have done MongoDB before, you might recognise this arrangement. See <a href="https://firebase.google.com/docs/firestore/data-model">the data model documentation</a> for more detail.</p>
+
+<h3 id="essential-reading-1">Essential reading</h3>
+
+<p><a href="https://firebase.google.com/docs/firestore/quickstart#web-modular-api">Cloud Firestore on Firebase docs</a></p>
+
+<h3 id="accessing-the-cloud-firestore-from-the-firebase-console">Accessing the Cloud Firestore from the Firebase Console</h3>
+
+<p>Once you’ve added the Cloud Firestore to the Firebase Console you can access the data within it by clicking <strong>Firestore Database</strong> from the sidebar. The diagram below shows this. It shows :</p>
+
+<ul>
+  <li>a collection called <code class="language-plaintext highlighter-rouge">songs</code>, containing…</li>
+  <li>a series of documents, each indexed by a unique ID. On the right hand side the document data of one example (representing Whatever by Oasis) is shown.</li>
+</ul>
+
+<p>You can manage data by adding and removing it via this web interface, but more normally you would do it from a client app.</p>
+
+<p><img src="https://nwcourses.github.io/COM623/images/firebase_firestore.png" alt="Cloud Firestore" /></p>
+
+<p>You also need to set the <em>rules</em> for accessing the Firestore database. One of the powerful features of Firebase is that you can link the Firestore to Firebase Auth, and automatically restrict database access to authenticated users. You can control this in the <em>Rules</em> tab of the Cloud Firestore:</p>
+
+<p><img src="https://nwcourses.github.io/COM623/images/firebase_firestore_rules.png" alt="Cloud Firestore Rules" /></p>
+
+<p>Note the rules include <code class="language-plaintext highlighter-rouge">allow read</code> and <code class="language-plaintext highlighter-rouge">allow write</code> specifiers, to control access to read and write operations respectively. By default both are set to <code class="language-plaintext highlighter-rouge">false</code> for security reasons. However the settings above are good for a basic web app: reading data does not require authentication, while writing data requires the user to be authenticated (note that <code class="language-plaintext highlighter-rouge">request.auth</code> is the <code class="language-plaintext highlighter-rouge">Auth</code> object from Firebase Auth).</p>
+
+<p>We can setup more detailed authentication control. See <a href="https://firebase.google.com/docs/rules/manage-deploy#use_the_firebase_console">the Firebase documentation</a> for more detail on rules.</p>
+
+<h3 id="imports">Imports</h3>
+
+<p>The imports below will cover everything we will do. Note how we have to import from <code class="language-plaintext highlighter-rouge">firebase/firestore</code> rather than <code class="language-plaintext highlighter-rouge">firebase/auth</code>.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">getFirestore</span><span class="p">,</span> <span class="nx">collection</span><span class="p">,</span> <span class="nx">addDoc</span><span class="p">,</span> <span class="nx">getDocs</span><span class="p">,</span> <span class="nx">query</span><span class="p">,</span> <span class="nx">where</span><span class="p">,</span> <span class="nx">doc</span><span class="p">,</span> <span class="nx">writeBatch</span><span class="p">,</span> <span class="nx">getDoc</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">firebase/firestore</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="create-your-firestore-object">Create your Firestore object</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">getFirestore</span><span class="p">(</span><span class="nx">app</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="search">Search</h3>
+
+<p>To search for data, you use the <code class="language-plaintext highlighter-rouge">getDocs()</code> function. This returns a <code class="language-plaintext highlighter-rouge">QuerySnapshot</code>: an object containing a series of <code class="language-plaintext highlighter-rouge">DocumentSnapshot</code>s returned by the query.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">querySnapshot</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getDocs</span><span class="p">(</span><span class="nx">collection</span><span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="dl">"</span><span class="s2">songs</span><span class="dl">"</span><span class="p">));</span>
+    <span class="kd">let</span> <span class="nx">html</span> <span class="o">=</span> <span class="dl">""</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">querySnapshot</span><span class="p">.</span><span class="nx">empty</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">alert</span><span class="p">(</span><span class="dl">"</span><span class="s2">No results!</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">html</span> <span class="o">=</span>  <span class="nx">querySnapshot</span><span class="p">.</span><span class="nx">docs</span><span class="p">.</span><span class="nx">map</span> <span class="p">(</span> <span class="nx">doc</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">data</span><span class="p">();</span>
+                <span class="k">return</span> <span class="s2">`</span><span class="p">${</span><span class="nx">doc</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2"> : </span><span class="p">${</span><span class="nx">data</span><span class="p">.</span><span class="nx">title</span><span class="p">}</span><span class="s2"> </span><span class="p">${</span><span class="nx">data</span><span class="p">.</span><span class="nx">artist</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
+            <span class="p">}</span> <span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="s2">&lt;br /&gt;</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">"</span><span class="s2">...</span><span class="dl">"</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">html</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Note how we can loop through the documents in the <code class="language-plaintext highlighter-rouge">QuerySnapshot</code> using <code class="language-plaintext highlighter-rouge">forEach</code>. Each time the <code class="language-plaintext highlighter-rouge">forEach</code> arrow function is called, the current document (<code class="language-plaintext highlighter-rouge">doc</code>) will be supplied as a parameter. We can then obtain the data associated with the current document using <code class="language-plaintext highlighter-rouge">doc.data()</code>.</p>
+
+<p>Note how the <code class="language-plaintext highlighter-rouge">id</code> belongs to the <em>document</em>, not the data.</p>
+
+<p>This example returns <em>all</em> data. In many cases however, we want to obtain only certain data, i.e. do a query. For example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">poiType</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">"</span><span class="s2">poiType</span><span class="dl">"</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span>
+        <span class="c1">// to get all:</span>
+    <span class="kd">const</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">query</span><span class="p">(</span><span class="nx">collection</span><span class="p">(</span><span class="nx">db</span><span class="p">,</span><span class="dl">"</span><span class="s2">pointsofinterest</span><span class="dl">"</span><span class="p">),</span> <span class="nx">where</span><span class="p">(</span><span class="dl">"</span><span class="s2">type</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">==</span><span class="dl">"</span><span class="p">,</span> <span class="nx">poiType</span><span class="p">));</span>
+    <span class="kd">const</span> <span class="nx">querySnapshot</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getDocs</span><span class="p">(</span><span class="nx">q</span><span class="p">);</span>
+
+    <span class="c1">// We can then process the querySnapshot as before...</span>
+<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Note here how we build a <em>query</em>, using the collection, a <code class="language-plaintext highlighter-rouge">where</code> condition (<code class="language-plaintext highlighter-rouge">where</code> is actually a function, which takes a field, an operator and a value the field should be equal to for the query to return results.</p>
+
+<p>We then pass the query into <code class="language-plaintext highlighter-rouge">getDocs()</code> and continue as before.</p>
+
+<h3 id="inserting-data">Inserting data</h3>
+
+<p>To insert data we use the <code class="language-plaintext highlighter-rouge">addDoc()</code> function, and specify, as arguments, the collection we want to add the data to, and a JavaScript object containing the data. This will create a document containing this data and return the unique ID (key) allocated to this document.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">docRef</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">addDoc</span><span class="p">(</span><span class="nx">collection</span><span class="p">(</span><span class="nx">db</span><span class="p">,</span><span class="dl">"</span><span class="s2">pointsofinterest</span><span class="dl">"</span><span class="p">),</span> <span class="p">{</span> 
+        <span class="na">name</span><span class="p">:</span> <span class="nx">nameFromForm</span><span class="p">,</span> 
+        <span class="nx">type</span><span class="p">,</span> <span class="nx">typeFromForm</span><span class="p">,</span>
+        <span class="na">location</span><span class="p">:</span> <span class="nx">locationFromForm</span> 
+<span class="p">}</span> <span class="p">);</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s2">`Record added successfully. ID=</span><span class="p">${</span><span class="nx">docRef</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>The return value of <code class="language-plaintext highlighter-rouge">addDoc()</code> is a <code class="language-plaintext highlighter-rouge">DocumentReference</code> object: a reference to a specific document.</p>
+
+<h2 id="exercise">Exercise</h2>
+
+<p>Clone this repository:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://github.com/nwcourses/FirebaseStarter
+</code></pre></div></div>
+<p>This contains a <code class="language-plaintext highlighter-rouge">package.json</code> and <code class="language-plaintext highlighter-rouge">webpack.config.js</code> setup to install Firebase and to run your project with Webpack Dev Server. To install:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install
+</code></pre></div></div>
+<p>and to start the server:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm start
+</code></pre></div></div>
+
+<p>There is an <code class="language-plaintext highlighter-rouge">index.html</code> within <code class="language-plaintext highlighter-rouge">dist</code> with various forms set up.</p>
+
+<h3 id="firebase-auth-1">Firebase Auth</h3>
+
+<ol>
+  <li>
+    <p>Ensure you have created a Firebase project, enabled Firebase Auth and Cloud Firestore, and added a web application to your project.</p>
+  </li>
+  <li>
+    <p>Create an <code class="language-plaintext highlighter-rouge">index.js</code> inside the root folder of the project and add the Firebase config generated from the Firebase console for your project.</p>
+  </li>
+  <li>
+    <p>Complete the code to sign up a user. Ensure that the success, or otherwise, of the operation is displayed inside the <code class="language-plaintext highlighter-rouge">signupStatus</code> div. Remember you’ll need to add an event listener to the appropriate button in order to run code when the button is clicked, see below.</p>
+  </li>
+  <li>
+    <p>Test the signup form with an invalid email address, a password of less than 7 characters, and finally with valid details. Go onto the Firebase console and verify that, in the latter case, a user was signed up.</p>
+  </li>
+  <li>
+    <p>Complete the code to login a user. Ensure that the success, or otherwise, of the operation is displayed inside the <code class="language-plaintext highlighter-rouge">loginStatus</code> div. Try it out, both with a valid user and an invalid user. If successful, display the user’s email via a <code class="language-plaintext highlighter-rouge">Logged in as...</code> message.</p>
+  </li>
+  <li>
+    <p>Modify your signup code to set the user’s display name, using the example shown in the notes.</p>
+  </li>
+  <li>
+    <p>Add code to handle changes in authentication state, as shown above. This should behave as follows:</p>
+
+    <ul>
+      <li>When a user has logged in, hide the login form and show the logout button and <code class="language-plaintext highlighter-rouge">firestore</code> div (this contains forms to interact with the Firestore database).</li>
+      <li>When a user has logged out, show the login form and hide the logout button and <code class="language-plaintext highlighter-rouge">firestore</code> div.</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="firestore">Firestore</h3>
+
+<p>If you finish the above exercise on Firebase Auth, start this Firestore exercise. If not, you can continue next week.</p>
+
+<ol>
+  <li>
+    <p>Create a new collection called <code class="language-plaintext highlighter-rouge">songs</code> on Firestore via the Firebase Console.</p>
+  </li>
+  <li>
+    <p>Add code to read data from the “add song” form. It should create a new document storing that song and add it to the <code class="language-plaintext highlighter-rouge">songs</code> collection.</p>
+  </li>
+  <li>
+    <p>Add code to read the artist from the “search” form. It should query the Firestore database to find all songs by that artist, and display the results in the <code class="language-plaintext highlighter-rouge">searchresults</code> div.</p>
+  </li>
+</ol>
+
+<h3 id="reminder---handling-button-click-events">Reminder - handling button click events</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">"</span><span class="s2">....</span><span class="dl">"</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">e</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

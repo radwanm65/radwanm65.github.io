@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Week 12 - More on Firestore rules, hosting a Firebase app | Course Notes</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Week 12 - More on Firestore rules, hosting a Firebase app" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Course material" />
+<meta property="og:description" content="Course material" />
+<link rel="canonical" href="index.html" />
+<meta property="og:url" content="https://nwcourses.github.io/COM623/old/week_12/" />
+<meta property="og:site_name" content="Course Notes" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Week 12 - More on Firestore rules, hosting a Firebase app" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Course material","headline":"Week 12 - More on Firestore rules, hosting a Firebase app","url":"https://nwcourses.github.io/COM623/old/week_12/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="../../../assets/css/style.css%3Fv=d5062f5581830390b9c21268f82f9c13411b2030.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nwcourses.github.io/">Course Notes</a></h1>
+      
+
+      <h1 id="week-12---more-on-firestore-rules-hosting-a-firebase-app">Week 12 - More on Firestore rules, hosting a Firebase app</h1>
+
+<h2 id="more-on-firestore-rules">More on Firestore rules</h2>
+
+<p>Last week we looked at some basic Firestore rules. We can make the rules more fine-grained, however, rather than just letting people read or write to the database depending on whether they are logged in or not. Here is an example of a more detailed set of rules:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /songs/{song} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if !("userId" in resource.data) || resource.data.userId == request.auth.uid
+    }
+  }
+}
+</code></pre></div></div>
+<p>There are quite a few things here to look at:</p>
+
+<ul>
+  <li>
+    <p>firstly note the <code class="language-plaintext highlighter-rouge">match /songs/{song}</code> under <code class="language-plaintext highlighter-rouge">match /databases/{database}/documents</code>. What do these <code class="language-plaintext highlighter-rouge">match</code> statements mean? The first matches <em>all</em> documents in <em>all</em> collections. The second, however, matches <strong>only documents in the <code class="language-plaintext highlighter-rouge">songs</code> collection</strong>. So the rules will only apply to documents inside <code class="language-plaintext highlighter-rouge">songs</code>.</p>
+  </li>
+  <li>
+    <p>note how we can split <code class="language-plaintext highlighter-rouge">write</code> into different types of write operations, i.e. <code class="language-plaintext highlighter-rouge">create</code>, <code class="language-plaintext highlighter-rouge">update</code> and <code class="language-plaintext highlighter-rouge">delete</code>.</p>
+  </li>
+  <li>
+    <p>the rule for <code class="language-plaintext highlighter-rouge">create</code> is easy: let the user create a document if they are logged in.</p>
+  </li>
+  <li>
+    <p>What about the rule for <code class="language-plaintext highlighter-rouge">update</code> or <code class="language-plaintext highlighter-rouge">delete</code> operations? We have a more complex <code class="language-plaintext highlighter-rouge">if</code> statement here. The rule is saying: allow users to update or delete records if <strong>either</strong> there is no <code class="language-plaintext highlighter-rouge">userId</code> property (representing the document’s creator) in the document, <strong>or</strong> there is a <code class="language-plaintext highlighter-rouge">userId</code> property, and it matches the user ID of the current user. <strong>Note that <code class="language-plaintext highlighter-rouge">resource.data</code> represents the document’s data</strong>, so <code class="language-plaintext highlighter-rouge">resource.data.userId</code> represents a property called <code class="language-plaintext highlighter-rouge">userId</code> within the document.</p>
+  </li>
+</ul>
+
+<p>So, documents without a <code class="language-plaintext highlighter-rouge">userId</code> can be updated or deleted by anyone. Documents <em>with</em> a <code class="language-plaintext highlighter-rouge">userId</code> can only be updated or deleted by the original creator.</p>
+
+<p>You can even create functions to perform rules tests, e.g:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+  
+    function isLoggedIn() {
+        return request.auth != null;
+    }
+
+    function hasCorrectRights() {
+        return !("userId" in resource.data) || resource.data.userId == request.auth.uid;
+    }
+  
+    match /songs/{song} {
+      allow read: if true;
+      allow create: if isLoggedIn();
+      allow update, delete: if isLoggedIn() &amp;&amp; hasCorrectRights();
+    }
+  }
+}
+</code></pre></div></div>
+
+<p>For more on Firestore rules, see <a href="https://firebase.google.com/docs/firestore/security/get-started">here</a></p>
+
+<h2 id="hosting-a-firebase-app">Hosting a Firebase app</h2>
+
+<p><strong>Note that this section contains original notes by Joe Appleton, but has been significantly modified. The screenshots are my own.</strong></p>
+
+<h3 id="getting-started-with-the-firebase-command-line-interface-cli">Getting started with the Firebase Command Line Interface (CLI)</h3>
+
+<p>According to the documentation, “The Firebase CLI provides a variety of tools for managing, viewing, and deploying to Firebase projects”.</p>
+
+<ul>
+  <li>Next, from within a terminal or shell run <code class="language-plaintext highlighter-rouge">npm install -g firebase-tools</code>. The <code class="language-plaintext highlighter-rouge">-g</code> option globally installs <code class="language-plaintext highlighter-rouge">npm</code> packages.</li>
+</ul>
+
+<h4 id="warning">Warning</h4>
+<ul>
+  <li>
+    <p>If you are working on the university computers, you can’t do global installs <code class="language-plaintext highlighter-rouge">npm install -g firebase-tools</code>.</p>
+  </li>
+  <li>
+    <p>Instead, you will need to install the firebase cli locally: <code class="language-plaintext highlighter-rouge">npm install -D firebase-tools</code></p>
+  </li>
+  <li>
+    <p>This gives you a <code class="language-plaintext highlighter-rouge">firebase</code> command which allows you to upload projects to Firebase. You should run this with <code class="language-plaintext highlighter-rouge">npx</code> (e.g., <code class="language-plaintext highlighter-rouge">firebase login</code> becomes <code class="language-plaintext highlighter-rouge">npx firebase login</code>)</p>
+  </li>
+</ul>
+
+<h3 id="using-the-firebase-cli-and-deploying-to-hosting">Using the Firebase CLI and Deploying to Hosting</h3>
+
+<ul>
+  <li>Within the terminal authenticate the CLI by running <code class="language-plaintext highlighter-rouge">npx firebase login</code>. This will open your browser and ask you to login to your Google account:</li>
+</ul>
+
+<p><img src="https://nwcourses.github.io/COM623/images/firebase_hosting_login.png" alt="Logging in" /></p>
+
+<p>When you have logged in, this screen will appear:</p>
+
+<p><img src="https://nwcourses.github.io/COM623/images/firebase_hosting_loggedin.png" alt="Logged in" /></p>
+
+<ul>
+  <li>Next, within the terminal, navigate to the root of your goal tracking application and run <code class="language-plaintext highlighter-rouge">npx firebase init</code>.</li>
+</ul>
+
+<p><img src="https://nwcourses.github.io/COM623/images/firebase_hosting_init.png" alt="Initialising a Firebase project" /></p>
+
+<ul>
+  <li>When prompted, select the option: <code>Hosting: Configure files for Firebase Hosting and (optionally) set up GitHub Action deploys</code>.</li>
+</ul>
+
+<p><img src="https://nwcourses.github.io/COM623/images/firebase_hosting_1_option_select.png" alt="Choosing correct options" /></p>
+
+<ul>
+  <li>As you already have a Firebase project setup, next choose <code>Use an existing project</code>.</li>
+</ul>
+
+<p><img src="https://nwcourses.github.io/COM623/images/firebase_hosting_2_use_existing_project.png" alt="Choose an existing project" /></p>
+
+<ul>
+  <li>Next, select your Firebase project (in this example, we have many):</li>
+</ul>
+
+<p><img src="https://nwcourses.github.io/COM623/images/firebase_hosting_3_project_select.png" alt="Selecting a project" /></p>
+
+<ul>
+  <li>You will be asked to choose several options relating to your project structure. Ensure you choose <code class="language-plaintext highlighter-rouge">dist</code> for your public directory and ensure you choose <code class="language-plaintext highlighter-rouge">No</code> when asked to overwrite <code class="language-plaintext highlighter-rouge">dist/index.html</code> (as you already have this file):</li>
+</ul>
+
+<p><img src="https://nwcourses.github.io/COM623/images/firebase_hosting_4_file_options.png" alt="File options for your project" /></p>
+
+<ul>
+  <li>We are now ready to deploy our application to the firebase hosting. First, create a production build of your project, <code class="language-plaintext highlighter-rouge">npm run build</code>. You will need to add an extra script to your <code class="language-plaintext highlighter-rouge">package.json</code>:</li>
+</ul>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"scripts"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">...</span><span class="w">
+    </span><span class="nl">"build"</span><span class="p">:</span><span class="w"> </span><span class="s2">"webpack --mode=production"</span><span class="w">
+    </span><span class="err">...</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>After this command has run you should see a ‘build’ folder containing your production-ready application.</p>
+
+<ul>
+  <li>
+    <p>Next, deploy the project to firebase hosting, you simply need to run the command <code class="language-plaintext highlighter-rouge">npx firebase deploy --only hosting</code></p>
+  </li>
+  <li>
+    <p>That’s it! If all has worked, your application should have been deployed to its own custom URL. You may want to add the hosting deployment command, and further commands you use, to your scripts object in your <code class="language-plaintext highlighter-rouge">package.json</code> file.</p>
+  </li>
+  <li>
+    <p>When it’s all working, log out of Firebase with:</p>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npx firebase logout
+</code></pre></div></div>
+
+<h2 id="hosting-and-server-components-important-for-assignment">Hosting and server components (IMPORTANT FOR ASSIGNMENT)</h2>
+
+<p>Note that Firebase hosting only works as described above if you use purely client components. This will be the case, for example, if you have a purely client-side React application.</p>
+
+<p>Hosting server-side applications including server components (such as a server-based Next.js application) is possible, but requires a billable Firebase account (Blaze plan): see <a href="https://firebase.google.com/codelabs/firebase-nextjs#2">the Firebase documentation</a>.</p>
+
+<p>This is obviously unsuitable for university coursework. Therefore, if you are using Next.js in the assignment <strong>please do not attempt to host it on Firebase</strong>. Instead:</p>
+
+<ul>
+  <li>
+    <p>Hand in your code, minus the API key (this applies to purely client-side projects too, as API keys are supposed to be confidential).</p>
+  </li>
+  <li>
+    <p>Provide me with a JSON “dump” of your Firestore database. You can do this, for example, by performing a search as shown in Week 10, and then using <code class="language-plaintext highlighter-rouge">JSON.stringify()</code> to output the search results as JSON. Hand in this JSON dump as part of your assignment.</p>
+  </li>
+  <li>
+    <p>I will then populate my own Firestore database with this JSON data and run your app locally on my machine.</p>
+  </li>
+</ul>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

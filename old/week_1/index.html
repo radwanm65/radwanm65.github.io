@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Practical Session - Week 1 | Course Notes</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Practical Session - Week 1" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Course material" />
+<meta property="og:description" content="Course material" />
+<link rel="canonical" href="index.html" />
+<meta property="og:url" content="https://nwcourses.github.io/COM623/old/week_1/" />
+<meta property="og:site_name" content="Course Notes" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Practical Session - Week 1" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Course material","headline":"Practical Session - Week 1","url":"https://nwcourses.github.io/COM623/old/week_1/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="../../../assets/css/style.css%3Fv=d5062f5581830390b9c21268f82f9c13411b2030.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nwcourses.github.io/">Course Notes</a></h1>
+      
+
+      <h1 id="practical-session---week-1">Practical Session - Week 1</h1>
+
+<p>By the end of this week you should be able to answer the following questions:</p>
+
+<ul>
+  <li>What are the latest features of JavaScript?</li>
+  <li>How can I package a modern JavaScript application?</li>
+</ul>
+
+<p><a href="https://solent.cloud.panopto.eu/Panopto/Pages/Embed.aspx?id=eac06dd3-4f6d-4f91-9de8-ac46013224e0&amp;autoplay=false&amp;offerviewer=true&amp;showtitle=true&amp;showbrand=false&amp;start=0&amp;interactivity=all">Practical session Week 1 Video</a></p>
+
+<blockquote>
+  <blockquote>
+    <p>Task two walk through</p>
+  </blockquote>
+</blockquote>
+
+<p>The purpose of this session is to ensure that everyone is up-to-speed with the latest version of JavaScript. To achieve this, we are going to work through the perennial <a href="https://github.com/tastejs/todomvc/">TodoList</a> exercise.</p>
+
+<p>In this session, we are focussing on vanilla JS; however, from next week onwards we will be using React.</p>
+
+<h2 id="session-dependencies">Session Dependencies</h2>
+
+<p>These should be available on the university computers.</p>
+
+<ul>
+  <li><a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">You will need to ensure you have the version control tool Git installed</a></li>
+  <li>You will need to ensure that you have installed <a href="https://nodejs.org/en/">node.js</a></li>
+  <li>While you can use any text editor for this session, a commonly-used IDE is <a href="https://code.visualstudio.com/download">VS Code</a>.</li>
+</ul>
+
+<h2 id="task-1">TASK 1</h2>
+
+<p><a href="https://www.greycampus.com/blog/programming/java-script-versions">Read the about the latest version of JavaScript</a></p>
+
+<h2 id="package-and-build-management">Package and Build Management</h2>
+
+<p><a href="https://solent.cloud.panopto.eu/Panopto/Pages/Embed.aspx?id=a6ae72f5-35a1-4843-9dec-ac460132246b&amp;autoplay=false&amp;offerviewer=true&amp;showtitle=true&amp;showbrand=false&amp;start=0&amp;interactivity=all">Package and Build Management Video</a></p>
+
+<p>In order to package our application we need to a build tool, <a href="https://Webpack.js.org/">Webpack</a> is currently the most popular tool.</p>
+
+<p>Webpack is a JavaScript <strong>bundler</strong>. It takes one or more JavaScript files, together with static assets such as CSS and images, and builds a single <strong>bundle file</strong> containing this code. This bundle can be included on your HTML pages with a <code class="language-plaintext highlighter-rouge">script</code> tag as always.</p>
+
+<p>The bundle contains <strong>minified</strong> JavaScript (encoded and compressed JavaScript, with a considerably smaller size and thus faster to download).</p>
+
+<blockquote>
+  <blockquote>
+    <p>At its core, Webpack is a static module bundler for modern JavaScript applications. When Webpack processes your application, it internally builds a dependency graph which maps every module your project needs and generates one or more bundles. (Webpack, 2020)</p>
+  </blockquote>
+</blockquote>
+
+<p><img src="assets/webpack-architecture.png" alt="Webpack Architecture" /></p>
+
+<blockquote>
+  <blockquote>
+    <p>Figure 1, a typical single page web application architecture.</p>
+  </blockquote>
+</blockquote>
+
+<h2 id="why-do-we-even-need-webpack">Why do we even need Webpack?</h2>
+
+<p><a href="https://solent.cloud.panopto.eu/Panopto/Pages/Embed.aspx?id=92986265-8a7d-4278-a843-ac46013224aa&amp;autoplay=false&amp;offerviewer=true&amp;showtitle=true&amp;showbrand=false&amp;start=0&amp;interactivity=all">Use of package.json and Webpack walkthrough Video</a> - note the content of <code class="language-plaintext highlighter-rouge">package.json</code> is slightly different in the video as it has been updated, but the principles are the same.</p>
+
+<blockquote>
+  <blockquote>
+    <p>package.json and Webpack</p>
+  </blockquote>
+</blockquote>
+
+<p>To understand why we need a tool such as Webpack, we must first consider a modern web application architecture and the practical goals of this module.</p>
+
+<p>Figure 1, represents the overarching practical project that we will be working on throughout these sessions. We are going to be creating this application on a <strong>single page</strong>. This type of application architecture is appropriately known as a single page application (SPA).</p>
+
+<p>Using an SPA approach, the browser loads a single page, along with what’s known as a JavaScript bundle. There is no need for further page reloads as the <code class="language-plaintext highlighter-rouge">bundle.js</code> file contains nearly everything the browser will need for the given session.</p>
+
+<p>This approach minimises HTTP requests and user wait time; however, the major drawback is search engines can not easily differentiate between pages in your application. This may not be a problem if the application is behind a login screen, as there is no need to appear in the search engines. If this is not the case, the solution is server-side rendering or pre-rendering, these are advanced topics that you should be aware of, but we will not cover them in your practical.</p>
+
+<p>It would not be practical for developers to construct or work on a bundle file as it may bundle together many hundreds of dependencies. Webpack is the solution to this challenge, it allows us to bundle together multiple JavaScript files and assets.</p>
+
+<blockquote>
+  <blockquote>
+    <p>When Webpack processes your application, it starts from a list of modules defined on the command line or in its config file. Starting from these entry points, Webpack recursively builds a dependency graph that includes every module your application needs, then bundles all of those modules into a small number of bundles - often, just one - to be loaded by the browser. (Webpack, 2020)</p>
+  </blockquote>
+</blockquote>
+
+<p>Let’s explore the above ideas by starting this weeks practical - a todo list application.</p>
+
+<h2 id="more-on-webpack">More on Webpack</h2>
+
+<p><em>This additional information, which you may find useful, was not based on Joe Appleton’s notes but has been taken from the <a href="https://nwcourses.github.io/COM620/week4.html">COM620 notes</a>.</em></p>
+
+<h3 id="running-webpack-directly-on-the-command-line">Running Webpack directly on the command line</h3>
+
+<p>Webpack can be installed with npm. As Webpack is a development tool, you want to install it globally, so that it is accessible to all applications on your system and all users. The -g option does this. (Normally, NPM packages are only installed locally into the project that needs them, within the project’s <code class="language-plaintext highlighter-rouge">node_modules</code> folder).</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install -g webpack webpack-cli
+</code></pre></div></div>
+
+<p>Here is the most simple usage:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npx webpack index.js
+</code></pre></div></div>
+
+<p>This will take the file index.js, and any modules it uses (along with any modules used by those modules) and prepare a single output file - a bundle - which will, by default, be placed in the dist subfolder with the name main.js. This can then be used directly in the browser e.g:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">'text/javascript'</span> <span class="na">src=</span><span class="s">'dist/bundle.js'</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>One key advantage of using a bundler like Webpack is that the bundler automatically includes third-party NPM packages in the bundle, if they are imported in your code using the package name e.g.:</p>
+
+<h3 id="webpack-configuration">Webpack configuration</h3>
+
+<p>Due to time constraints, we will only take a brief look at Webpack configuration. By default, Webpack will place its output in the file main.js within the dist folder, and it will also minify the code, in other words convert it into an unreadable but compact form for distribution.</p>
+
+<p>However it is possible to configure Webpack to change this behaviour, and this is done via the webpack.config.js configuration file. This is a file, itself written in JavaScript, which allows you to modify Webpack’s default behaviour. Here is an example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">path</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">mode</span><span class="p">:</span> <span class="dl">'</span><span class="s1">development</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">entry</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./index.js</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">'</span><span class="s1">dist</span><span class="dl">'</span><span class="p">),</span>
+        <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">bundle.js</span><span class="dl">'</span>
+    <span class="p">},</span>
+    <span class="na">optimization</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">minimize</span><span class="p">:</span> <span class="kc">false</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>What is this doing?</p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">mode</code> can be either development or production. This impacts upon the amount of minifying that takes place (less in development, more in production; debugging is easier with an unminified bundle).</p>
+  </li>
+  <li>
+    <p>We specify the application’s entry point (the JavaScript file where your application starts running) as ./index.js (index.js in the current folder). This means you can run Webpack with</p>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npx webpack
+</code></pre></div></div>
+
+<p>rather than</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npx webpack ./index.js
+</code></pre></div></div>
+
+<p>because the configuration file has told Webpack that the entry point of the application will be <code class="language-plaintext highlighter-rouge">./index.js</code>.</p>
+
+<p>We then specify some output options. Firstly, the path is the folder where the output bundle will be placed. Here, we are specifying the output is the dist subfolder of the current folder, and the filename is bundle.js. So, the resulting bundle will be named bundle.js and not main.js. In fact, bundle.js is a better name as main.js is often used for the file containing the main JavaScript code, as an alternative to index.js.</p>
+
+<p>The optimization options allow us to specify various ways in which the output will be optimised. Here, we are turning minification off by setting the minimize option to false. This can be useful for debugging, as you will not get helpful error messages with a minified bundle file.</p>
+
+<h3 id="the-webpackconfigjs-of-the-todo-application">The webpack.config.js of the TODO application</h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">webpack.config.js</code> of the TODO application (see Task 2, below) is a little more complex as it includes instructions to start Webpack’s inbuilt development server, <code class="language-plaintext highlighter-rouge">webpack-dev-server</code> from the <code class="language-plaintext highlighter-rouge">dist</code> folder.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>devServer: {
+  static: './dist'
+}
+</code></pre></div></div>
+<p>and instructions to process CSS and image imports (see <code class="language-plaintext highlighter-rouge">rules</code> within <code class="language-plaintext highlighter-rouge">module</code>).</p>
+
+<h2 id="task-2">TASK 2</h2>
+
+<ul>
+  <li>Clone the following repository <code class="language-plaintext highlighter-rouge">https://github.com/nwcourses/todo-list-tutorial</code></li>
+  <li>Open the resulting <code class="language-plaintext highlighter-rouge">todo-list-tutorial</code> in VS code or another environment</li>
+  <li>Install the dependencies, <code class="language-plaintext highlighter-rouge">npm install</code></li>
+  <li>Open <code class="language-plaintext highlighter-rouge">package.json</code> and work out how to run the defined scripts to:
+    <ul>
+      <li>run project in development mode</li>
+      <li>create a development build</li>
+      <li>create a production build</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Build the project in development mode.</p>
+
+<p>If you open up <code class="language-plaintext highlighter-rouge">index.html</code> (inside <code class="language-plaintext highlighter-rouge">dist</code>) there is simply a placeholder div, <code class="language-plaintext highlighter-rouge">&lt;div id="app"&gt;&lt;/div&gt;</code> for our application. Such a set up is typical of a SPA, we have a single element that the entire application is injected into.</p>
+
+<p>Once you’ve done this, you can run the project with:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm run start
+</code></pre></div></div>
+<p>As you can probably see from <code class="language-plaintext highlighter-rouge">package.json</code>, this will start Webpack’s inbuilt server (<code class="language-plaintext highlighter-rouge">webpack-dev-server</code>) to run your application, the server will serve pages from the <code class="language-plaintext highlighter-rouge">dist</code> folder. This is configured in <code class="language-plaintext highlighter-rouge">webpack.config.js</code>, as discussed above</p>
+
+<h2 id="es6-modules">ES6 modules</h2>
+
+<p><a href="https://solent.cloud.panopto.eu/Panopto/Pages/Embed.aspx?id=47179bca-5915-40c7-a6fd-ac4601322510&amp;autoplay=false&amp;offerviewer=true&amp;showtitle=true&amp;showbrand=false&amp;start=0&amp;interactivity=all">Exercise walkthrough video</a></p>
+
+<p><em>Note that some things have changed for this year compared to what is in the video, for example we are now using <code class="language-plaintext highlighter-rouge">npm run start</code> to start the Webpack dev server, not <code class="language-plaintext highlighter-rouge">npm run dev-server</code>.</em></p>
+
+<p>ES6 modules allow us to comparmentalise our code into reusable components - let’s explore this idea that is used heavily in modern JavaScript development.</p>
+
+<h2 id="task-3">TASK 3</h2>
+
+<p>In your <code class="language-plaintext highlighter-rouge">src</code> directory create a file called <code class="language-plaintext highlighter-rouge">todolist.js</code>. Add the following code:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">todos</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span>
+    <span class="na">id</span><span class="p">:</span> <span class="dl">"</span><span class="s2">1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">text</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Complete Android Assessment</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">created</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Jan 22 2024 07:02:0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">completed</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="na">id</span><span class="p">:</span> <span class="dl">"</span><span class="s2">2</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">text</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Organise Social Event</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">created</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Jan 23 2024 07:03:0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">completed</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="p">},</span>
+<span class="p">];</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">todos</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>In the above example, by exporting our constant containing the todo list array we make it available to our wider application. Notice how we use the keyword <code class="language-plaintext highlighter-rouge">default</code> we can only have a single default export per file.</p>
+
+<p>We can use <code class="language-plaintext highlighter-rouge">todolist</code> in <code class="language-plaintext highlighter-rouge">main.js</code> by importing it by using the following code:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">todos</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./todolist</span><span class="dl">"</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">todos</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Try the above yourself.</p>
+
+<p>We looked at writing and importing modules last year in <a href="https://nwcourses.github.io/COM518/topic7.html">COM518</a>. By using modules and importing them into your main JavaScript code, you can re-use them in multiple applications.</p>
+
+<p>In the above example, we are importing <code class="language-plaintext highlighter-rouge">todolist</code> which we can access through the variable <code class="language-plaintext highlighter-rouge">todos</code>. As <code class="language-plaintext highlighter-rouge">todos</code> is a default export, we could change the variable name, e.g. <code class="language-plaintext highlighter-rouge">import td from "./todolist";</code></p>
+
+<p>Before moving on, experiment with:</p>
+
+<ul>
+  <li>exporting and importing a function (e.g. one that squares numbers) from a separate module</li>
+  <li>exporting and importing multiple imports.</li>
+</ul>
+
+<p>At the moment our application does not resemble a todo list, in-fact, there is nothing rendered - let’s change this.</p>
+
+<h2 id="task-4">TASK 4</h2>
+
+<ul>
+  <li>An amazing feature of Webpack is that, by using different loaders, it allows us to treat a wide range of different assets as JavaScript modules - odd, but very useful. Case in point, add the following lines of code to the top of <code class="language-plaintext highlighter-rouge">main.js</code>:</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="dl">"</span><span class="s2">./main.css</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">img1</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../assets/top-left-elips.png</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">img2</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../assets/bottom-right-elips.png</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>This imports <strong>two images directly into variables</strong>, a demonstration of the power Webpack offers. It also allows you to import a CSS file, which will be applied to your site.</p>
+
+<p>To explore this:</p>
+
+<ul>
+  <li>In <code class="language-plaintext highlighter-rouge">main.js</code> create a function called <code class="language-plaintext highlighter-rouge">render()</code> that logs to the console “ready”</li>
+  <li>Add the following event listener to <code class="language-plaintext highlighter-rouge">main.js</code> that ensures <code class="language-plaintext highlighter-rouge">render()</code> only runs when the page is loaded, <code class="language-plaintext highlighter-rouge">window.addEventListener('DOMContentLoaded',render);</code></li>
+  <li>Below is a constant containing a string of HTML using backtick syntax (so that variables can be embedded). Work out, using previous knowledge learnt on COM518, how you would, within the <code class="language-plaintext highlighter-rouge">render()</code> function set the innerHTML of <code class="language-plaintext highlighter-rouge">index.html</code>’s <code class="language-plaintext highlighter-rouge">&lt;div id="app"&gt;&lt;/div&gt;</code> to this value. Notice how the variables <code class="language-plaintext highlighter-rouge">img1</code> and <code class="language-plaintext highlighter-rouge">img2</code> within the <code class="language-plaintext highlighter-rouge">src</code> attribute of the <code class="language-plaintext highlighter-rouge">img</code> tags are variables based on the above Webpack imports!</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">view</span> <span class="o">=</span> <span class="s2">` &lt;img
+src="</span><span class="p">${</span><span class="nx">img1</span><span class="p">}</span><span class="s2">"
+id="background-left"
+alt="background"
+/&gt;
+&lt;img
+src="</span><span class="p">${</span><span class="nx">img2</span><span class="p">}</span><span class="s2">"
+id="background-right"
+alt="background"
+/&gt;
+
+&lt;div class="wrapper"&gt;
+&lt;div class="todolist"&gt;
+  &lt;h1&gt;STUDENT TO DO LIST&lt;/h1&gt;
+  &lt;input type="text" id="todoInput" placeholder="What do you need to do today...." /&gt;
+  &lt;div class="list"&gt;
+  &lt;/div&gt;
+  &lt;!-- /.list --&gt;
+&lt;/div&gt;
+&lt;!-- /.todolist --&gt;
+&lt;/div&gt;
+&lt;!-- /.wrapper --&gt;`</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="breaking-down-an-application-into-components">Breaking Down an Application Into Components</h2>
+
+<p>Destructuring is a further concept that is used widely in modern JavaScript. Let’s explore this idea with a further exercise.</p>
+
+<ul>
+  <li>
+    <p>It would be nice to not have the majority of our functionality in <code class="language-plaintext highlighter-rouge">main.js</code> and instead, separate it out into different modules. With this in mind, let’s create a separate file that is responsible for rendering a single todo item on our todo list.
+Create a new file <code class="language-plaintext highlighter-rouge">todo.js</code>.</p>
+  </li>
+  <li>
+    <p>Add the following to <code class="language-plaintext highlighter-rouge">todo.js</code> :</p>
+
+    <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">Todo</span> <span class="o">=</span> <span class="p">(</span><span class="nx">text</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="s2">`&lt;div class="outer-item" id="outer-item-</span><span class="p">${</span><span class="nx">id</span><span class="p">}</span><span class="s2">" &gt;
+&lt;div class="to-do-item"&gt;
+&lt;p&gt; </span><span class="p">${</span><span class="nx">text</span><span class="p">}</span><span class="s2"> &lt;/p&gt;
+&lt;span class="close" id="close</span><span class="p">${</span><span class="nx">id</span><span class="p">}</span><span class="s2">" &gt;  X &lt;/span&gt;
+&lt;/div&gt;
+&lt;!-- /.to-do-item --&gt;
+&lt;/div&gt;
+&lt;!-- /.outer-item --&gt;`</span><span class="p">;</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Todo</span><span class="p">;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>I’ve defined a function (<code class="language-plaintext highlighter-rouge">Todo</code>) here, using the lambda syntax. It is often called an arrow function. We looked at these last year in COM518.</p>
+  </li>
+  <li>
+    <p>The <code class="language-plaintext highlighter-rouge">Todo</code> function takes some text and a unique ID as parameters, and returns an HTML string containing the Todo item formatted as HTML. It contains a simple close button, taking the form of a <code class="language-plaintext highlighter-rouge">span</code> containing the letter <code class="language-plaintext highlighter-rouge">X</code>. Later on we will add an event handler to this, to to make that specific todo item disappear when it is clicked. <strong>Note how the <code class="language-plaintext highlighter-rouge">span</code> has an ID based on the todo item’s numerical ID, we will need this later to identify which item was clicked.</strong></p>
+  </li>
+  <li>
+    <p>Add code to your <code class="language-plaintext highlighter-rouge">main.js</code> to import the default export (the <code class="language-plaintext highlighter-rouge">Todo</code> function) from <code class="language-plaintext highlighter-rouge">todo.js</code> into your <code class="language-plaintext highlighter-rouge">main.js</code>, in a similar way to how youj imported the todos array from <code class="language-plaintext highlighter-rouge">todolist.js</code>.</p>
+  </li>
+</ul>
+
+<h2 id="array-operations">Array Operations</h2>
+
+<p>You should know what an array is - it is a data structure represented by <code class="language-plaintext highlighter-rouge">[]</code> which can be used to contain multiple items of data. We have already used arrays, our todo list is an array of object literals:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">todos</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span>
+    <span class="na">id</span><span class="p">:</span> <span class="dl">"</span><span class="s2">1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">text</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Complete Android Assessment</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">created</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Jan 22 2024 07:02:0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">completed</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="na">id</span><span class="p">:</span> <span class="dl">"</span><span class="s2">2</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">text</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Organise Social Event</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">created</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Jan 23 2024 07:03:0</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">completed</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="p">},</span>
+<span class="p">];</span>
+</code></pre></div></div>
+
+<p>Arrays, come with inbuilt operations that we can run on them. For instance, <code class="language-plaintext highlighter-rouge">todos.reverse()</code> will reverse the array for us. Some of the most useful features are operations that allow us to loop through the entire array and construct a new array by applying a function to each member of the array. A slightly odd concept, however, one you will become very familiar with. Some key operations are <code class="language-plaintext highlighter-rouge">map</code>, <code class="language-plaintext highlighter-rouge">reduce</code>, <code class="language-plaintext highlighter-rouge">filter</code> and <code class="language-plaintext highlighter-rouge">find</code>.</p>
+
+<p>Let’s consider <code class="language-plaintext highlighter-rouge">map</code> in the context of our todo list. <code class="language-plaintext highlighter-rouge">map</code> allows us to apply a specific operation to each member of an array and generate an output array.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">newArrayJustText</span> <span class="o">=</span> <span class="nx">todos</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">item</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">item</span><span class="p">.</span><span class="nx">text</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">newArrayJustText</span><span class="p">);</span> <span class="c1">//  ['Complete Android Assessment','Organise Social Event'];</span>
+</code></pre></div></div>
+
+<p>As you can see, <code class="language-plaintext highlighter-rouge">map()</code> is a function that takes, as a parameter, another function. This second function, on each iteration, gets passed an array element. The function then returns the <code class="language-plaintext highlighter-rouge">text</code> property of each item in the array, so the output array contains only the <code class="language-plaintext highlighter-rouge">text</code> properties of each item.</p>
+
+<h2 id="task-5">TASK 5</h2>
+
+<ul>
+  <li>Within your <code class="language-plaintext highlighter-rouge">main.js</code> render function add the following lines of code:</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">htmlList</span> <span class="o">=</span> <span class="nx">todos</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">item</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">Todo</span><span class="p">(</span><span class="nx">item</span><span class="p">.</span><span class="nx">text</span><span class="p">,</span> <span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">));</span>
+<span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="dl">"</span><span class="s2">.list</span><span class="dl">"</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">htmlList</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>As if by magic you now have a todo list, because each item in the array is <strong>mapped to the return value of the <code class="language-plaintext highlighter-rouge">Todo()</code> function with the <code class="language-plaintext highlighter-rouge">text</code> and <code class="language-plaintext highlighter-rouge">id</code> of each item passed in as parameters</strong>.</li>
+  <li>Can you see the annoying comma that is printed to the DOM ? - work out how to remove this.</li>
+</ul>
+
+<h2 id="spread-operator">Spread Operator</h2>
+
+<p>We need to push and remove todos from our <code class="language-plaintext highlighter-rouge">todolist</code>; however, notice how it is a constant (<code class="language-plaintext highlighter-rouge">const</code> is used to declare the variable). This means that, after definition, it can’t be changed - a concept known as immutability.</p>
+
+<p>Immutability is a good thing, it allows us to consistently rely on values as they are passed around our program. Instead of modifying immutable values we make copies of them.</p>
+
+<p>You may logically think you could do the following:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">array_1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">];</span>
+<span class="kd">let</span> <span class="nx">array_2</span> <span class="o">=</span> <span class="nx">array_1</span><span class="p">;</span>
+<span class="nx">array_2</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="mi">7</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">array_1</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">array_2</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="copying-an-array-with-the-spread-operator">Copying an array with the spread operator</h3>
+
+<p>The above operates in a strange way, can you see why?</p>
+
+<p>It is because we create <strong>two references to the same data in memory</strong>. <code class="language-plaintext highlighter-rouge">array_1</code> and <code class="language-plaintext highlighter-rouge">array_2</code> are both referring to the area of memory storing the array. So if we push to <code class="language-plaintext highlighter-rouge">array_2</code>, the value actually gets added to <code class="language-plaintext highlighter-rouge">array_1</code> and <code class="language-plaintext highlighter-rouge">array_2</code> because they are pointing to the same data!</p>
+
+<p>To make a copy of an array we can use the spread operator <code class="language-plaintext highlighter-rouge">...</code> . This is how it is used:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">array_1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
+<span class="kd">const</span> <span class="nx">array_2</span> <span class="o">=</span> <span class="p">[....</span><span class="nx">array_1</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>In the above example, we are not modifying <code class="language-plaintext highlighter-rouge">array_1</code>. Instead, we are using the spread operator to compose a new array.</p>
+
+<p>The spread operator breaks down an array into its constituent values and allows them to be specified as multiple parameters. So here, <code class="language-plaintext highlighter-rouge">array_2</code> will consist of the individual items of <code class="language-plaintext highlighter-rouge">array_1</code>, plus the value <code class="language-plaintext highlighter-rouge">7</code>.</p>
+
+<p>In the example below we use the spread operator to create a new array when a TODO list item is removed.</p>
+
+<p>This example also revises the use of <code class="language-plaintext highlighter-rouge">bind()</code> to set up event listeners to pass parameters, as we need to pass the todo list into the <code class="language-plaintext highlighter-rouge">render()</code> function. Please see <a href="https://nwcourses.github.io/COM518/topic4.html">the COM518 notes from last year</a>, specifically the section on Binding, for more detail.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Modify your DOMContentLoaded to call render() via bind()</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">DOMContentLoaded</span><span class="dl">"</span><span class="p">,</span> <span class="nx">render</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">todos</span><span class="p">));</span>
+
+<span class="c1">// Modify your render() function to take a given todos list as a parameter</span>
+<span class="kd">function</span> <span class="nx">render</span><span class="p">(</span><span class="nx">todos</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="c1">// Setup your `view' variable - as before...</span>
+
+  <span class="c1">// Create a new array 'tds' containing a copy of the todos list</span>
+  <span class="kd">const</span> <span class="nx">tds</span> <span class="o">=</span> <span class="p">[...</span><span class="nx">todos</span><span class="p">];</span>
+
+  <span class="c1">// Create a function which runs when the "close" span on each todo item is clicked</span>
+  <span class="kd">const</span> <span class="nx">handleCloseClick</span> <span class="o">=</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// render all items except the one with the ID of the item clicked by filtering the `tds` array</span>
+    <span class="c1">// e.target gives us the item that was clicked. We obtain its ID with</span>
+    <span class="c1">// e.target.id.</span>
+    <span class="c1">// Its ID will be "close" plus the item ID, e.g. close1, close2, etc. </span>
+    <span class="c1">// We need to find the numerical ID so we can filter the array.</span>
+    <span class="c1">// We do this by taking the substring of the ID starting at character 5</span>
+    <span class="c1">// e.g. 2 for an ID of "close2".</span>
+    <span class="c1">// substr() allows us to do this.</span>
+    <span class="c1">//</span>
+    <span class="c1">// FOR YOU TO DO: explain what filter() is doing and explain why we are</span>
+    <span class="c1">// calling render() again (Task 6)</span>
+    <span class="nx">render</span><span class="p">(</span><span class="nx">tds</span><span class="p">.</span><span class="nx">filter</span><span class="p">((</span><span class="nx">item</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">!=</span> <span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">));</span>
+  <span class="p">};</span>
+
+  
+  <span class="c1">// Place 'view' inside your 'app' div (as before)</span>
+  
+  <span class="c1">// Setup 'htmlList' (as before0</span>
+
+  <span class="c1">// Join the htmlList array into a single string, with each member </span>
+  <span class="c1">// separated by a space</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="dl">"</span><span class="s2">.list</span><span class="dl">"</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">htmlList</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="s2"> </span><span class="dl">"</span><span class="p">);</span>
+
+  <span class="c1">// Setup event handlers on each 'X' close button</span>
+  <span class="c1">// Each close button has a class of 'close' so the querySelectorAll() call</span>
+  <span class="c1">// will find all elements with a class of 'close', i.e. all close buttons</span>
+  
+  <span class="nb">document</span>
+    <span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="dl">"</span><span class="s2">.close</span><span class="dl">"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="nx">handleCloseClick</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="task-6">TASK 6</h2>
+
+<ul>
+  <li>Write down on paper what you believe <code class="language-plaintext highlighter-rouge">filter</code> and <code class="language-plaintext highlighter-rouge">forEach</code> are doing in the code above and explain why we are calling <code class="language-plaintext highlighter-rouge">render()</code> again inside <code class="language-plaintext highlighter-rouge">handleCloseClick()</code>.</li>
+  <li>Complete the todo list application so we can add new todos. You need to add a form with text fields and a button, create a new todo item, add it to the array of todos, and then re-render the page by calling <code class="language-plaintext highlighter-rouge">render()</code> again.</li>
+</ul>
+
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

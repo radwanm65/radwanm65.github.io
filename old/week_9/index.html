@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Week 9 - Next.js part 3 | Course Notes</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Week 9 - Next.js part 3" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Course material" />
+<meta property="og:description" content="Course material" />
+<link rel="canonical" href="index.html" />
+<meta property="og:url" content="https://nwcourses.github.io/COM623/old/week_9/" />
+<meta property="og:site_name" content="Course Notes" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Week 9 - Next.js part 3" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Course material","headline":"Week 9 - Next.js part 3","url":"https://nwcourses.github.io/COM623/old/week_9/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="../../../assets/css/style.css%3Fv=d5062f5581830390b9c21268f82f9c13411b2030.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nwcourses.github.io/">Course Notes</a></h1>
+      
+
+      <h1 id="week-9---nextjs-part-3">Week 9 - Next.js part 3</h1>
+
+<p>This week, the final of three weeks introducing the fundamentals of Next.js, will cover these further topics:</p>
+
+<ul>
+  <li>More on using client and server components together, when they can be used together and when they cannot</li>
+  <li>Logins and sessions in Next.js</li>
+  <li>Middleware in Next.js</li>
+  <li>Route groups, and why they are useful</li>
+</ul>
+
+<h2 id="using-client-and-server-components-together">Using client and server components together</h2>
+
+<p><em>(This reference <a href="https://nextjs.org/docs/app/building-your-application/rendering/composition-patterns">on the Next.js documentation</a> was used to draw up these notes. Please see this link for more detail).</em></p>
+
+<p>We’ve seen that Next.js allows us to use <em>server components</em> (the default) which run on the server, and <em>client components</em> which run in the browser. We mark the latter with <code class="language-plaintext highlighter-rouge">"use client"</code> to indicate to the Next.js compiler that they will be run in the browser.</p>
+
+<p>When should you use each?</p>
+
+<ul>
+  <li>Server components are needed whenever you need to do any server processing, such as querying a database;</li>
+  <li>Client components can be used if you do not need to do any server processing; you reduce the load on the server if you simply run it on the client.</li>
+</ul>
+
+<h3 id="client-components-within-server-components">Client components within server components</h3>
+
+<p>You can, as we have seen, create a page which consists of a mixture of server and client components. For example</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">ClientComponent</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/ui/clientcomponent</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Page</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>This heading is coming from the main page, running on the server<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">ClientComponent</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Page</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Here, <code class="language-plaintext highlighter-rouge">Page</code> is a server component (which is the default) but <code class="language-plaintext highlighter-rouge">&lt;ClientComponent&gt;</code> is a client component. This works as expected; the server component runs on the server and the response is delivered to the client. The client then executes the <code class="language-plaintext highlighter-rouge">&lt;ClientComponent&gt;</code>.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">ClientComponent</code> might look like this:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use client</span><span class="dl">"</span>
+
+<span class="kd">function</span> <span class="nx">ClientComponent</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>This component is running on the client!<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;;</span>
+<span class="p">}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">ClientComponent</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>This might be useful (as we have seen) when the page performs a database query and each result from the database (e.g. each product in a shopping site) is rendered as a client component, e.g, using <code class="language-plaintext highlighter-rouge">map</code> to convert the raw database data to JSX. The client component, which renders the product details, does not need to run on the server (because we have already got the data from the database) so we can reduce server load by making it a client component.</p>
+
+<p>As we have also seen last week, when we use <code class="language-plaintext highlighter-rouge">useFormState()</code> with server actions to implement AJAX-based updates, the component which calls the server action needs to be client, as you might expect. So in this case you would also need to potentially include client components within a server component.</p>
+
+<h3 id="server-components-within-client-components">Server components within client components</h3>
+
+<p>What about the opposite case, though, where we might want to embed a server component inside a client component? For example:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use client</span><span class="dl">"</span>
+
+<span class="k">import</span> <span class="nx">ServerComponent</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/ui/servercomponent</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">ClientComponent</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>This heading is in the client component<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nc">ServerComponent</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Will this work? <strong>It will not, because you cannot embed a server component in a client component like this</strong>. Think about what would have to happen here. The client component is running on the client, but to render the server component, <strong>it would need to make another request to the server</strong>, in addition to the original request for the page which contains the client component (as shown above).</p>
+
+<p>To enable this to happen, we need to take a different approach. <strong>We need to pass the server component into the client component as a prop</strong>. This means the server component would render first, so there is no need for a further HTTP request. We can do this on our main page as follows:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Client</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/ui/client</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Server</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/ui/server</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Page</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;&gt;&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Page - this is server<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;&lt;</span><span class="nc">Client</span> <span class="na">srv</span><span class="p">=</span><span class="err">&lt;</span><span class="na">Server</span><span class="p">/&gt;</span> /&gt;<span class="p">&lt;/&gt;;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Page</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Note how we render <code class="language-plaintext highlighter-rouge">&lt;Client&gt;</code> from the page, but pass in the prop <code class="language-plaintext highlighter-rouge">srv</code> which is set equal to <code class="language-plaintext highlighter-rouge">&lt;Server&gt;</code>. <strong>This works</strong> : the server component will be executed before it’s passed to the client, and its output will be sent to the client. The client might look like this:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use client</span><span class="dl">"</span>
+<span class="kd">function</span> <span class="nx">Client</span><span class="p">({</span><span class="nx">srv</span><span class="p">})</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;&gt;&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>This is a client component!<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">srv</span><span class="si">}</span><span class="p">&lt;/&gt;;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Client</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Note how it receives the <code class="language-plaintext highlighter-rouge">srv</code> prop and renders it. The server component would then need to include:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"use server"
+</code></pre></div></div>
+<p>as it’s being rendered from a client component. It might look something like this:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use server</span><span class="dl">"</span>
+
+<span class="k">import</span> <span class="nx">Database</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">better-sqlite3</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Server</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Connect to and query a database (not shown)</span>
+    <span class="kd">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="c1">// database results mapped to JSX </span>
+    <span class="k">return</span> <span class="p">&lt;&gt;&lt;</span><span class="nt">h3</span><span class="p">&gt;</span>This is a server component!<span class="p">&lt;/</span><span class="nt">h3</span><span class="p">&gt;&lt;</span><span class="nt">ul</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">res</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;&lt;/&gt;;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Server</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Another way of doing this is to make the server component a child of the client:</p>
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">&lt;</span><span class="nc">Client</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">Server</span> <span class="p">/&gt;</span>
+<span class="p">&lt;/</span><span class="nc">Client</span><span class="p">&gt;</span>
+</code></pre></div></div>
+
+<p>As we saw in the first React session, we can then access it in the <code class="language-plaintext highlighter-rouge">Client</code> component using the <code class="language-plaintext highlighter-rouge">children</code> prop:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use client</span><span class="dl">"</span>
+<span class="kd">function</span> <span class="nx">Client</span><span class="p">({</span><span class="nx">children</span><span class="p">})</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;&gt;&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>This is a client component!<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">children</span><span class="si">}</span><span class="p">&lt;/&gt;;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Client</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="logins-and-sessions-in-nextjs">Logins and sessions in Next.js</h2>
+
+<p>So far we have not considered how to implement session variables and login systems in Next.js. There is actually not a standard technique; you need to either use third-party libraries or implement your own from scratch.</p>
+
+<p>Two recommended libraries for implementing sessions in Next.js are:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">iron-session</code>, a reasonably simple library which stores sessions in encrypted cookies.</li>
+  <li><code class="language-plaintext highlighter-rouge">next-auth</code>, a more flexible though more complex library which can handle third-party providers (Google, Facebook, etc).</li>
+</ul>
+
+<p>We will use <code class="language-plaintext highlighter-rouge">iron-session</code> as it’s the simplest. This is documented <a href="https://github.com/vvo/iron-session">here</a>, on GitHub. It’s available as an <code class="language-plaintext highlighter-rouge">npm</code> package, e.g.:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install iron-session
+</code></pre></div></div>
+
+<p>This code snippet is an example of using <code class="language-plaintext highlighter-rouge">iron-session</code>. We need a password to sign the cookie, and a cookie name. A convenient place to put these is in a module, and export them:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">cookieName</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">hittasticSession</span><span class="dl">"</span><span class="p">,</span> 
+    <span class="nx">password</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">BinnieAndClyde123456789012345678</span><span class="dl">"</span><span class="p">;</span> <span class="c1">// must be at least 32 characters</span>
+</code></pre></div></div>
+<p>Here is an example of performing a simple (and extremely insecure) authentication and saving the username in the session:</p>
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">getIronSession</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">iron-session</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">cookies</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">next/headers</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">cookieName</span><span class="p">,</span> <span class="nx">password</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/sharedData</span><span class="dl">'</span><span class="p">;</span>  <span class="c1">// our module containing the cookie name and password, see above</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">login</span><span class="p">(</span><span class="nx">formData</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getIronSession</span><span class="p">(</span><span class="nx">cookies</span><span class="p">(),</span> <span class="p">{</span> <span class="nx">password</span><span class="p">,</span> <span class="nx">cookieName</span> <span class="p">}</span> <span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">username</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">username</span><span class="dl">"</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">username</span><span class="o">==</span><span class="dl">"</span><span class="s2">admin</span><span class="dl">"</span> <span class="o">&amp;&amp;</span> <span class="nx">formData</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">password</span><span class="dl">"</span><span class="p">)</span><span class="o">==</span><span class="dl">"</span><span class="s2">password</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">session</span><span class="p">.</span><span class="nx">username</span> <span class="o">=</span> <span class="nx">username</span><span class="p">;</span>
+        <span class="k">await</span> <span class="nx">session</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span> <span class="c1">// must save the session after setting it</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Other code omitted...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Note how we initialise the session using the <code class="language-plaintext highlighter-rouge">cookies()</code> sent from the client, and specify the cookie name we wish to use, as well as the password.</p>
+
+<p>In this example we read in a username and password from a form and check that they are <code class="language-plaintext highlighter-rouge">admin</code>/<code class="language-plaintext highlighter-rouge">password</code> (yes, not at all secure, but this is just a basic example!) and if they are, store the username in the session object.</p>
+
+<p>Later we can retrieve the session again, eg.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const session = await getIronSession(cookies(), { password, cookieName } );
+if(session.username) {
+    // we are potentially logged in if the username field is present - check 
+    // the database to see if the user is actually logged in (see below)
+} else {
+    // we are not logged in
+}
+</code></pre></div></div>
+
+<p>In a full example you would check the username and password against a database. To handle logouts you can either <code class="language-plaintext highlighter-rouge">unset</code> the session property (e.g. <code class="language-plaintext highlighter-rouge">session.username</code>) or set it to <code class="language-plaintext highlighter-rouge">null</code>.</p>
+
+<h3 id="adding-login-status-to-the-database">Adding login status to the database</h3>
+
+<p>Note that simply checking for <code class="language-plaintext highlighter-rouge">session.username</code> renders the cookie liable to tampering on the client side (e.g. adding the username back in to the cookie) so further checks need to be added. If we just grant access by checking for the existence of the <code class="language-plaintext highlighter-rouge">username</code> property, it’s conceivable that it will exist due to client-side tampering, so we should also store the current login status of a user in the database table, as described on the <code class="language-plaintext highlighter-rouge">iron-session</code> documentation.</p>
+
+<p>So when the user logs in, we set a flag in the database to <code class="language-plaintext highlighter-rouge">true</code> to indicate that they have authenticated successfully, and when they log out, we set the flag back to <code class="language-plaintext highlighter-rouge">false</code> to indicate that this username should no longer have access to private resources. So if the cookie contains a <code class="language-plaintext highlighter-rouge">username</code> property, we check the database to see whether that user is currently logged in (is the flag <code class="language-plaintext highlighter-rouge">true</code>?), and only grant access if they are.</p>
+
+<p>This shows the structure of the users table. (In a production application the password would of course be encrypted)</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>username</th>
+      <th>password</th>
+      <th>loggedin</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>fred</td>
+      <td>fred123</td>
+      <td>false</td>
+    </tr>
+    <tr>
+      <td>jane</td>
+      <td>jane123</td>
+      <td>true</td>
+    </tr>
+    <tr>
+      <td>james</td>
+      <td>james123</td>
+      <td>true</td>
+    </tr>
+    <tr>
+      <td>tina</td>
+      <td>tina123</td>
+      <td>false</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In this example, users <code class="language-plaintext highlighter-rouge">jane</code> and <code class="language-plaintext highlighter-rouge">james</code> are logged in.</p>
+
+<h3 id="checking-the-session">Checking the session</h3>
+
+<p>We can later check the session in any page or layout, and by doing so, we can render different content depending on whether we are logged in or not.</p>
+
+<p>As an alternative, we can use <em>middleware</em> to check the session.</p>
+
+<h2 id="middleware">Middleware</h2>
+
+<p><em>See <a href="https://nextjs.org/docs/app/building-your-application/routing/middleware">the Next.js documentation</a></em></p>
+
+<p>Last year in WAD we looked at <em>middleware</em> and saw that middleware was code that executed before the route itself, which can be used to perform actions such as modify the request or check the presence of sessions. We saw that you could use middleware to block access to certain routes to people who are not logged in or not administrators.</p>
+
+<p>Next.js also uses middleware. It’s placed in the <code class="language-plaintext highlighter-rouge">middleware.js</code> file in the root folder of your project (i.e. the folder containing the <code class="language-plaintext highlighter-rouge">package.json</code>). Here is an example of Next.js middleware:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">NextResponse</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">next/server</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">getIronSession</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">iron-session</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">cookies</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">next/headers</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">cookieName</span><span class="p">,</span> <span class="nx">password</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">app/sharedData</span><span class="dl">'</span><span class="p">;</span>  <span class="c1">// our module containing the cookie name and password, see above</span>
+
+<span class="k">export</span> <span class="k">async</span> <span class="kd">function</span> <span class="nx">middleware</span><span class="p">(</span><span class="nx">request</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getIronSession</span> <span class="p">(</span><span class="nx">cookies</span><span class="p">(),</span> <span class="p">{</span> <span class="nx">password</span><span class="p">,</span> <span class="nx">cookieName</span> <span class="p">}</span> <span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">session</span><span class="p">.</span><span class="nx">username</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">request</span><span class="p">.</span><span class="nx">nextUrl</span><span class="p">.</span><span class="nx">pathname</span><span class="p">.</span><span class="nx">startsWith</span><span class="p">(</span><span class="dl">"</span><span class="s2">/login</span><span class="dl">"</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="k">new</span> <span class="nx">URL</span><span class="p">(</span><span class="dl">"</span><span class="s2">/login</span><span class="dl">"</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">));</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">forwarding to next middleware...</span><span class="dl">"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>We create a function called <code class="language-plaintext highlighter-rouge">middleware()</code> and export it. This function takes one parameter, <code class="language-plaintext highlighter-rouge">request</code>, of type <code class="language-plaintext highlighter-rouge">NextRequest</code>, which represents the HTTP request. In this example we check whether the <code class="language-plaintext highlighter-rouge">username</code> property of the session exists. If it does not, and the request (which we can obtain via <code class="language-plaintext highlighter-rouge">request.nextUrl.pathname</code>) is not for the route <code class="language-plaintext highlighter-rouge">/login</code> (the login page) we redirect to the login page. We need to check that the route is not for the login page, as we do not need to protect that, obviously - and if we did run the middleware for the login page, we’d get into an infinite redirect loop as the middleware would redirect back to the login page!</p>
+
+<p>If the username does exist, or we did request the login page, then we forward to the original target of the request, i.e. the page itself (which is obtained via <code class="language-plaintext highlighter-rouge">NextResponse.next()</code>). This technique is similar to Expreess middleware.</p>
+
+<p>We can also restrict the routes the middleware is applied to by exporting a <code class="language-plaintext highlighter-rouge">config</code> object from <code class="language-plaintext highlighter-rouge">middleware.js</code> (in addition to the function). For example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">matcher</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/hittastic/:path*</span><span class="dl">'</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>This will run the middleware only on routes beginning with `/hittastic. We can alternatively specify an array of matching routes, e.g</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">matcher</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">/hittastic/addSong</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">/hittastic/buy</span><span class="dl">'</span> <span class="p">]</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>which means that the middleware will run only on <code class="language-plaintext highlighter-rouge">/hittastic/addSong</code> and <code class="language-plaintext highlighter-rouge">/hittastic/buy</code>.</p>
+
+<p>For more refined specification of routes using pattern-matching, we can use <em>regular expressions</em> : see the documentation for more detail.</p>
+
+<h2 id="route-groups">Route groups</h2>
+
+<p>Sometimes we may wish to use different layouts for different routes with the same base path. For example we may have these routes:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">/hittastic</code></li>
+  <li><code class="language-plaintext highlighter-rouge">/hittastic/search</code></li>
+  <li><code class="language-plaintext highlighter-rouge">/hittastic/about</code></li>
+  <li><code class="language-plaintext highlighter-rouge">/hittastic/addSong</code></li>
+  <li><code class="language-plaintext highlighter-rouge">/hittastic/login</code></li>
+</ul>
+
+<p>We may wish the first four to have a full layout, featuring a sidebar and main content area, and a Logout button if the user is logged in. The login route, however, probably needs a simpler layout with just a login form, and crucially no Logout button.</p>
+
+<p>What we can do in this case is to create <em>route groups</em>. Route groups allow us to do just this - create different layouts for different routes within the same path. A route group is created by making a folder with a name within parentheses. For example within the ``hittastic` folder we could create:</p>
+
+<ul>
+  <li>a <code class="language-plaintext highlighter-rouge">(main)</code> folder containing the first four routes above;</li>
+  <li>a <code class="language-plaintext highlighter-rouge">(login)</code> folder containing the <code class="language-plaintext highlighter-rouge">login</code> route.</li>
+</ul>
+
+<p>We could then place separate <code class="language-plaintext highlighter-rouge">layout.js</code> files in <code class="language-plaintext highlighter-rouge">(main)</code> and <code class="language-plaintext highlighter-rouge">(login)</code>.</p>
+
+<p>When requesting the routes we do not need to include the route group in parentheses, so if the <code class="language-plaintext highlighter-rouge">search</code> route was within <code class="language-plaintext highlighter-rouge">(main)</code>, the route we would use to request the page would be:</p>
+
+<p><code class="language-plaintext highlighter-rouge">/hittastic/search</code></p>
+
+<p>and not</p>
+
+<p><code class="language-plaintext highlighter-rouge">/hittastic/(main)/search</code></p>
+
+<h2 id="exercises">Exercises</h2>
+
+<p>Using the material from this week, develop a login system for HitTastic! You should use the <code class="language-plaintext highlighter-rouge">ht_users</code> table in <a href="wadsongs.db">this version of wadsongs.db</a> to validate users. Ensure that you use the <code class="language-plaintext highlighter-rouge">loggedin</code> column as described above when logging in and when checking whether a user has access.</p>
+
+<p>Prevent access to all pages within <code class="language-plaintext highlighter-rouge">/hittastic</code> and its subroutes (ensure all your previous work is inside the <code class="language-plaintext highlighter-rouge">/hittastic</code> folder) <em>except</em> <code class="language-plaintext highlighter-rouge">/hittastic/login</code> which should contain a login form.</p>
+
+<p>Use a server action to do your login, and use either middleware or simple “if” statements to check whether a user is logged in.</p>
+
+<p>Create a “Logout” component containing a “Logout” button (and nothing else). This should connect to a server action which logs the user out.</p>
+
+<p>Use the sidebar-based layout from last week for all pages except the login page. Also, ensure the logout button does not appear in the login page. Use route groups for this.</p>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

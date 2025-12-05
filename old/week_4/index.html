@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Week 4: Further State, Refs, Effects | Course Notes</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Week 4: Further State, Refs, Effects" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Course material" />
+<meta property="og:description" content="Course material" />
+<link rel="canonical" href="index.html" />
+<meta property="og:url" content="https://nwcourses.github.io/COM623/old/week_4/" />
+<meta property="og:site_name" content="Course Notes" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Week 4: Further State, Refs, Effects" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Course material","headline":"Week 4: Further State, Refs, Effects","url":"https://nwcourses.github.io/COM623/old/week_4/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="../../../assets/css/style.css%3Fv=d5062f5581830390b9c21268f82f9c13411b2030.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nwcourses.github.io/">Course Notes</a></h1>
+      
+
+      <h1 id="week-4-further-state-refs-effects">Week 4: Further State, Refs, Effects</h1>
+
+<p>Today we will continue to look at more advanced aspects of state by considering the ownership of state by components. Please note that much of this material is based on <a href="https://react.dev/learn/preserving-and-resetting-state">this section of the React documentation</a>. We will also take a look at React <em>refs</em> and <em>effects</em>.</p>
+
+<h2 id="changing-state-triggers-a-re-render-of-the-component">Changing State triggers a re-render of the component</h2>
+
+<p>One of the most critical aspects of changing state is that it <em>triggers a re-render of the component</em>. When we update state, the component is re-rendered in order to display the new values of the state variables. (If a state variable is set to the same value as the existing value, React knows not to re-render). This example can be used to demonstrate this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">renderings</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">App3</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="nx">renderings</span><span class="o">++</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span> <span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="dl">""</span><span class="p">);</span>
+
+    <span class="k">return</span><span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="p">{</span><span class="nx">name</span><span class="p">}</span><span class="o">!&lt;</span><span class="sr">/h1</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nb">Number</span> <span class="k">of</span> <span class="nx">renderings</span><span class="p">:</span> <span class="p">{</span><span class="nx">renderings</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/p</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">Go!</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">updateState</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/p</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">updateState</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setName</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App3</span><span class="p">;</span>
+</code></pre></div></div>
+<p>This example is very like the <code class="language-plaintext highlighter-rouge">GreetingComponent</code> we looked at two weeks ago, but counts the number of renderings, storing it in the variable <code class="language-plaintext highlighter-rouge">renderings</code> outside of the <code class="language-plaintext highlighter-rouge">App3</code> component. (Why does it have to be outside?)</p>
+
+<p>By trying this example out, you can see how many times the component re-renders itself.</p>
+
+<p>(In fact it’s not a good idea to change global variables from a component: see the <a href="https://nwcourses.github.io/COM623/old/week_4/URL">React documentation</a>. I have done it here simply to demonstrate that a component re-renders itself when state changes).</p>
+
+<h2 id="state-belongs-to-a-specific-component">State belongs to a specific component</h2>
+
+<p>In some cases you may wish to have multiple instances of the same child component, e.g. two separate To Do lists (one for work, one for leisure), as you saw last week. In such a case, the state belongs to a <em>specific component</em> (e.g. a specific To Do list).</p>
+
+<p>Here is a simple example in which the <code class="language-plaintext highlighter-rouge">App</code> component contains two <code class="language-plaintext highlighter-rouge">Counter</code> components. First the <code class="language-plaintext highlighter-rouge">App</code> component:
+~                        `</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Counter</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Counter</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Two</span> <span class="nx">Counters</span><span class="o">&lt;</span><span class="sr">/h1</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">Counter</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">Counter</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>and the <code class="language-plaintext highlighter-rouge">Counter</code> component.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Counter</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">count</span><span class="p">,</span><span class="nx">setCount</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">incCount</span><span class="p">(){</span>
+        <span class="nx">setCount</span><span class="p">(</span><span class="nx">count</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span><span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="nx">Count</span><span class="p">:</span> <span class="p">{</span><span class="nx">count</span><span class="p">}</span> <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">+</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">incCount</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Counter</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Note how the Counter component stores a <code class="language-plaintext highlighter-rouge">count</code> in the state, which increases each time we click the button.</p>
+
+<p>If you try this out (along with an appropriate HTML page and <code class="language-plaintext highlighter-rouge">index.js</code>) you will see that two counters appear, each of which independently record the number of clicks.</p>
+
+<h3 id="hiding-a-component-resets-state">Hiding a component resets state</h3>
+
+<p>This example includes a button on the <code class="language-plaintext highlighter-rouge">App</code> component which toggles the visibility of the second counter, showing it and hiding it.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Counter</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Counter</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">App</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">show</span><span class="p">,</span><span class="nx">setShow</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+
+
+    <span class="kd">function</span> <span class="nx">handleClick</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setShow</span><span class="p">(</span><span class="o">!</span><span class="nx">show</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">Counter</span> <span class="o">/&gt;</span>
+        <span class="p">{</span> <span class="nx">show</span> <span class="p">?</span> <span class="o">&lt;</span><span class="nx">Counter</span> <span class="o">/&gt;</span> <span class="p">:</span> <span class="dl">""</span> <span class="p">}</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">show</span><span class="p">?</span> <span class="dl">'</span><span class="s1">Hide</span><span class="dl">'</span><span class="p">:</span><span class="dl">'</span><span class="s1">Show</span><span class="dl">'</span><span class="p">}</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleClick</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+<p>In this example, <code class="language-plaintext highlighter-rouge">App</code> stores a variable <code class="language-plaintext highlighter-rouge">show</code> in state. This is toggled with the button, and if <code class="language-plaintext highlighter-rouge">show</code> is false, the second counter is hidden.</p>
+
+<p>If you try this, you will find that the counter <strong>resets to 0</strong> if you hide the second counter and then show it again. This is because <strong>state is destroyed</strong> if a component is no longer rendered.</p>
+
+<p>Furthermore state is destroyed if you change the <em>order</em> of rendering of a given component. For example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Counter</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Counter</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">App</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">swapped</span><span class="p">,</span><span class="nx">setSwapped</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+
+
+    <span class="kd">function</span> <span class="nx">handleClick</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setSwapped</span><span class="p">(</span><span class="o">!</span><span class="nx">swapped</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="p">{</span> <span class="nx">swapped</span> <span class="p">?</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">A</span> <span class="nx">placeholder</span> <span class="nx">div</span><span class="o">&lt;</span><span class="sr">/div&gt;: &lt;Counter /</span><span class="o">&gt;</span> <span class="p">}</span>
+        <span class="p">{</span> <span class="nx">swapped</span> <span class="p">?</span> <span class="o">&lt;</span><span class="nx">Counter</span> <span class="o">/&gt;</span> <span class="p">:</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">A</span> <span class="nx">placeholder</span> <span class="nx">div</span><span class="o">&lt;</span><span class="sr">/div&gt; </span><span class="err">}
+</span>        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">Move Counter</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleClick</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>This time, the <code class="language-plaintext highlighter-rouge">App</code> component renders a <code class="language-plaintext highlighter-rouge">Counter</code> along with a placeholder <code class="language-plaintext highlighter-rouge">div</code>. If you press the button, the counter and the div will be swapped over within the <code class="language-plaintext highlighter-rouge">App</code> component, as the order of rendering depends on the state variable <code class="language-plaintext highlighter-rouge">swapped</code>. When this happens, <strong>the Counter is rendered in a different position within the DOM of <code class="language-plaintext highlighter-rouge">App</code></strong> (as the second child rather than first) and as a result, the state will be reset.</p>
+
+<h3 id="using-keys-to-identify-components">Using keys to identify components</h3>
+
+<p>We briefly looked at <strong>keys</strong> last week, and saw that you should mark each item in a list with a unique key. We are now going to start looking about <em>why</em> this is a good idea. It allows us to identify a specific component, and preserve its state if its rendering position is moved. For example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Counter</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Counter</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">App</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">swapped</span><span class="p">,</span><span class="nx">setSwapped</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+
+
+    <span class="kd">function</span> <span class="nx">handleClick</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setSwapped</span><span class="p">(</span><span class="o">!</span><span class="nx">swapped</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">Counter</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">swapped</span> <span class="p">?</span> <span class="dl">'</span><span class="s1">c2</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">c1</span><span class="dl">'</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">Counter</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">swapped</span> <span class="p">?</span> <span class="dl">'</span><span class="s1">c1</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">c2</span><span class="dl">'</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">Swap</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleClick</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>In this example, each counter component has a <strong>key</strong>, <code class="language-plaintext highlighter-rouge">c1</code> or <code class="language-plaintext highlighter-rouge">c2</code>. Depending on the value of the state variable <code class="language-plaintext highlighter-rouge">swapped</code>, the counters are rendered either in order <code class="language-plaintext highlighter-rouge">c1</code>,<code class="language-plaintext highlighter-rouge">c2</code>, or order <code class="language-plaintext highlighter-rouge">c2</code>,<code class="language-plaintext highlighter-rouge">c1</code>. But because each is identified with a key, the state of each counter will be <em>preserved</em> by the swap.</p>
+
+<h2 id="refs---preserving-data-between-renderings">Refs - preserving data between renderings</h2>
+
+<p><em>React documentation: <a href="https://react.dev/learn/referencing-values-with-refs">here</a></em></p>
+
+<p>Sometimes it might be desirable to <em>preserve data</em> between renderings, without using state. State is intended for data that will be <em>rendered</em> (hence, updating state triggers a re-rendering) but there are some cases where we might wish to preserve data for other reasons. For example, we might want to keep hold of a timer handle used to control a timer function. Or we might want to use objects which are part of other APIs, such as mapping APIs (e.g. Leaflet, which you looked at last year).</p>
+
+<p>We could use global variables, declared outside the component, for this in theory. However this is not considered good design as components are supposed to be  <em>pure functions</em> (ref React docs) which perform a task (rendering a component) without changing any exernal variables.</p>
+
+<p>Instead we can use a <em>ref</em> (reference). A ref is a variable that can be changed within the component without causing a re-rendering.</p>
+
+<p>A good example to store in a ref might be a timer variable. Remember that you can use <code class="language-plaintext highlighter-rouge">setInterval()</code> in JavaScript to run code at a certain interval, e.g.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">let</span> <span class="nx">seconds</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">timerHandle</span> <span class="o">=</span> <span class="nx">setInterval</span><span class="p">(</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">seconds</span><span class="dl">'</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s2">`</span><span class="p">${</span><span class="nx">seconds</span><span class="o">++</span><span class="p">}</span><span class="s2"> seconds have passed.`</span>
+<span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
+</code></pre></div></div>
+<p>In the example above the arrow function which displays the number of seconds that have passed, and increments the seconds, will run every second (1000 milliseconds). Note also how <code class="language-plaintext highlighter-rouge">setInterval()</code> returns a handle on the timed function (stored in the variable <code class="language-plaintext highlighter-rouge">timer</code> here) which can be used later to cancel the timer:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">clearInterval</span><span class="p">(</span><span class="nx">timerHandle</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>So how can we do this in React? We can store the timer as a <em>ref</em>, because we need to preserve it between renderings. For example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Timer</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">timerHandle</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useRef</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">startTime</span><span class="p">,</span> <span class="nx">setStartTime</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">time</span><span class="p">,</span> <span class="nx">setTime</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+
+    <span class="kd">function</span> <span class="nx">startTimer</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">timerHandle</span><span class="p">.</span><span class="nx">current</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">t</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">;</span>
+            <span class="nx">setStartTime</span><span class="p">(</span><span class="nx">t</span><span class="p">);</span>
+            <span class="nx">setTime</span><span class="p">(</span><span class="nx">t</span><span class="p">);</span>
+            <span class="nx">timerHandle</span><span class="p">.</span><span class="nx">current</span> <span class="o">=</span> <span class="nx">setInterval</span> <span class="p">(</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="nx">setTime</span><span class="p">(</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">);</span>
+            <span class="p">}</span> <span class="p">,</span> <span class="mi">1000</span> <span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">stopTimer</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">timerHandle</span><span class="p">.</span><span class="nx">current</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">clearInterval</span><span class="p">(</span><span class="nx">timerHandle</span><span class="p">.</span><span class="nx">current</span><span class="p">);</span>
+            <span class="nx">timerHandle</span><span class="p">.</span><span class="nx">current</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span><span class="p">(</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="nx">Time</span><span class="p">:</span> <span class="p">{</span><span class="nb">Math</span><span class="p">.</span><span class="nx">round</span><span class="p">(</span><span class="nx">time</span> <span class="o">-</span> <span class="nx">startTime</span><span class="p">)}</span> <span class="nx">seconds</span> <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">start</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">startTimer</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">stop</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">stopTimer</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Timer</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>What’s this doing?</p>
+<ul>
+  <li>It’s a component simulating a timer, which starts from 0 and increments every second when ‘start’ is clicked, and stops when ‘stop’ is clicked.</li>
+  <li>It uses an interval function to do this. The interval function resets the <code class="language-plaintext highlighter-rouge">time</code> state variable to the current time (in seconds since January 1st 1970) every second. The timer handle (<code class="language-plaintext highlighter-rouge">timerHandle</code>) is cleared when the user clicks ‘stop’.- In the rendering, the time in seconds is calculated by subtracting the initial time (<code class="language-plaintext highlighter-rouge">startTime</code>, another state variable) from the current time (the <code class="language-plaintext highlighter-rouge">time</code> state variable).</li>
+  <li>The handle is stored in a <strong>ref</strong> as we need to preserve it between renderings, but isn’t being rendered itself and we do not want any changes to it to trigger a re-rendering. Note that to access the actual data in the ref, we need to use its <code class="language-plaintext highlighter-rouge">current</code> property, e.g. <code class="language-plaintext highlighter-rouge">timerHandle.current</code> in this example.</li>
+</ul>
+
+<p>Here is another example of using a ref, to hold a Leaflet map.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">LeafletMap</span><span class="p">({</span><span class="nx">lat1</span><span class="p">,</span> <span class="nx">lon1</span><span class="p">})</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">map</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useRef</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">setLat</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="nx">lat1</span> <span class="o">||</span> <span class="mf">51.05</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">lon</span><span class="p">,</span> <span class="nx">setLon</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="nx">lon1</span> <span class="o">||</span> <span class="o">-</span><span class="mf">0.72</span><span class="p">);</span>
+
+    <span class="nx">React</span><span class="p">.</span><span class="nx">useEffect</span><span class="p">(</span> <span class="p">()</span><span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="c1">// Initialise the map ref if it hasn't been initialised already</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">map</span><span class="p">.</span><span class="nx">current</span> <span class="o">===</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span> 
+            <span class="nx">map</span><span class="p">.</span><span class="nx">current</span> <span class="o">=</span> <span class="nx">L</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="dl">"</span><span class="s2">div1</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// Set the map up in the normal way</span>
+        <span class="nx">L</span><span class="p">.</span><span class="nx">tileLayer</span>
+        <span class="p">(</span><span class="dl">"</span><span class="s2">https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png</span><span class="dl">"</span><span class="p">,</span>
+            <span class="p">{</span> <span class="na">attribution</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Copyright OSM contributors, ODBL</span><span class="dl">"</span> <span class="p">}</span> <span class="p">).</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">.</span><span class="nx">current</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">pos</span> <span class="o">=</span> <span class="p">[</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">lon</span><span class="p">];</span>    
+        <span class="nx">map</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">setView</span><span class="p">(</span><span class="nx">pos</span><span class="p">,</span> <span class="mi">14</span><span class="p">);</span>
+
+        <span class="c1">// Handle the map moveend event by updating the state appropriately</span>
+        <span class="nx">map</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">"</span><span class="s2">moveend</span><span class="dl">"</span><span class="p">,</span> <span class="nx">e</span><span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">centre</span> <span class="o">=</span> <span class="nx">map</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">getCenter</span><span class="p">();</span>
+            <span class="nx">setLat</span><span class="p">(</span><span class="nx">centre</span><span class="p">.</span><span class="nx">lat</span><span class="p">);</span>
+            <span class="nx">setLon</span><span class="p">(</span><span class="nx">centre</span><span class="p">.</span><span class="nx">lng</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+
+
+    <span class="c1">// You'll need to set the dimensions of 'div1' in your CSS</span>
+    <span class="k">return</span><span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="nx">Lat</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">lat</span><span class="dl">'</span> <span class="o">/&gt;</span>
+        <span class="nx">Lon</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">lon</span><span class="dl">'</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">go</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">setPos</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nb">Map</span> <span class="nx">centred</span> <span class="nx">at</span><span class="p">:</span> <span class="p">{</span><span class="nx">lat</span><span class="p">}</span> <span class="p">{</span><span class="nx">lon</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/p</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="dl">"</span><span class="s2">div1</span><span class="dl">"</span><span class="o">&gt;&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+    
+    <span class="kd">function</span> <span class="nx">setPos</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">lt</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">lat</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span>
+        <span class="kd">const</span> <span class="nx">lng</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">lon</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span>
+        <span class="nx">setLat</span><span class="p">(</span><span class="nx">lt</span><span class="p">);</span>
+        <span class="nx">setLon</span><span class="p">(</span><span class="nx">lng</span><span class="p">);</span>
+        <span class="nx">map</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">setView</span><span class="p">([</span><span class="nx">lt</span><span class="p">,</span> <span class="nx">lng</span><span class="p">],</span> <span class="mi">14</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">LeafletMap</span><span class="p">;</span>
+</code></pre></div></div>
+<p>In this example, the current map latitude and longitude are stored in state and displayed. Also, when the user clicks the button to change the location, the map moves to that location.</p>
+
+<p>The interesting thing, though, is that the map is stored as a <code class="language-plaintext highlighter-rouge">ref</code>. It’s not a state variable to be rendered, it’s an external entity to React which needs to be kept around between renders. Refs are a good way of handling such external objects. So we initialise it as a ref, and then update the position of the map using that ref in <code class="language-plaintext highlighter-rouge">setPos()</code>.</p>
+
+<p>We also handle map <code class="language-plaintext highlighter-rouge">moveend</code> events (when the user stops dragging the map) so that the <code class="language-plaintext highlighter-rouge">lat</code> and <code class="language-plaintext highlighter-rouge">lon</code> state variables are updated to hold the new centre position of the map.</p>
+
+<p>Finally you will note that the map initialisation code is written inside an arrow function passed to something we have not discussed yet: <code class="language-plaintext highlighter-rouge">React.useEffect()</code>. What is this? The next section will explain!</p>
+
+<h2 id="effects">Effects</h2>
+
+<p><em>React documentation: <a href="https://react.dev/learn/synchronizing-with-effects">here</a></em></p>
+
+<p>Commonly we might want some non-React code to run each time we render. For example, we might wish to fetch data from an external web API. We cannot do this directly inside the component function, as the component function is intended for rendering only; it should execute quickly and not contain time-consuming code. We could use an event handler (e.g. a button click handler), to perform these kinds of operations, but in some cases we might want the action to occur without such an event, e.g. when the component first loads or each time we render.</p>
+
+<p>Instead, we can create an <code class="language-plaintext highlighter-rouge">effect</code>. An effect is a function which we might want to run each time the component renders, which performs some kind of external operation. We specify effects with <code class="language-plaintext highlighter-rouge">React.useEffect()</code>, passing in a function as a parameter. An example is given above in the mapping component. Note that the code to initialise the map is placed within an arrow function passed as a parameter to <code class="language-plaintext highlighter-rouge">React.useEffect()</code>.</p>
+
+<p>Note how in our effect, we check that the map (a ref) is <code class="language-plaintext highlighter-rouge">null</code>. If it’s <code class="language-plaintext highlighter-rouge">null</code>, it means we haven’t initialised it yet so we initialise it. If not, we do nothing. Effects run <strong>each time the component is rendered</strong>, so we have to ensure that we do not re-initialise the map each time the component is rendered, which would be very wasteful and would also constantly reset the map to its default location.</p>
+
+<h3 id="effects-and-asyncawait">Effects and async/await</h3>
+
+<p>You cannot make an effect an <code class="language-plaintext highlighter-rouge">async</code> function. If you wish to do asynchronous tasks (e.g. AJAX) from an effect directly, you should use the <code class="language-plaintext highlighter-rouge">then</code>-based syntax  for promises instead. See <a href="https://nwcourses.github.io/COM518/topic3.html">WAD week 3</a>.</p>
+
+<h3 id="running-effects-just-once---on-initialisation">Running effects just once - on initialisation</h3>
+
+<p>The example above showed one way to prevent effects running on each render, by setting up a ref and checking whether it’s <code class="language-plaintext highlighter-rouge">null</code>. However, there is a second, automatic, way of doing this. We can pass an empty array as the second parameter to <code class="language-plaintext highlighter-rouge">React.useEffect()</code>. This will cause the effect to run just once, on startup. The example below is the Leaflet map example re-written to do this:</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">LeafletMap2</span><span class="p">({</span><span class="nx">lat1</span><span class="p">,</span> <span class="nx">lon1</span><span class="p">})</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">map</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useRef</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">setLat</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="nx">lat1</span> <span class="o">||</span> <span class="mf">51.05</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">lon</span><span class="p">,</span> <span class="nx">setLon</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="nx">lon1</span> <span class="o">||</span> <span class="o">-</span><span class="mf">0.72</span><span class="p">);</span>
+
+    <span class="nx">React</span><span class="p">.</span><span class="nx">useEffect</span><span class="p">(</span> <span class="p">()</span><span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="c1">// As effect will run only once, there is no need to check if map.current is null</span>
+        <span class="nx">map</span><span class="p">.</span><span class="nx">current</span> <span class="o">=</span> <span class="nx">L</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="dl">"</span><span class="s2">div1</span><span class="dl">"</span><span class="p">);</span>
+
+        <span class="c1">// Set the map up in the normal way</span>
+        <span class="nx">L</span><span class="p">.</span><span class="nx">tileLayer</span>
+        <span class="p">(</span><span class="dl">"</span><span class="s2">https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png</span><span class="dl">"</span><span class="p">,</span>
+            <span class="p">{</span> <span class="na">attribution</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Copyright OSM contributors, ODBL</span><span class="dl">"</span> <span class="p">}</span> <span class="p">).</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">.</span><span class="nx">current</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">pos</span> <span class="o">=</span> <span class="p">[</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">lon</span><span class="p">];</span>    
+        <span class="nx">map</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">setView</span><span class="p">(</span><span class="nx">pos</span><span class="p">,</span> <span class="mi">14</span><span class="p">);</span>
+
+        <span class="c1">// Handle the map moveend event by updating the state appropriately</span>
+        <span class="nx">map</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">"</span><span class="s2">moveend</span><span class="dl">"</span><span class="p">,</span> <span class="nx">e</span><span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">centre</span> <span class="o">=</span> <span class="nx">map</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">getCenter</span><span class="p">();</span>
+            <span class="nx">setLat</span><span class="p">(</span><span class="nx">centre</span><span class="p">.</span><span class="nx">lat</span><span class="p">);</span>
+            <span class="nx">setLon</span><span class="p">(</span><span class="nx">centre</span><span class="p">.</span><span class="nx">lng</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="p">},[]);</span>
+
+
+    <span class="c1">// You'll need to set the dimensions of 'div1' in your CSS</span>
+    <span class="k">return</span><span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="nx">Lat</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">lat</span><span class="dl">'</span> <span class="o">/&gt;</span>
+        <span class="nx">Lon</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">lon</span><span class="dl">'</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">go</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">setPos</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nb">Map</span> <span class="nx">centred</span> <span class="nx">at</span><span class="p">:</span> <span class="p">{</span><span class="nx">lat</span><span class="p">}</span> <span class="p">{</span><span class="nx">lon</span><span class="p">}</span><span class="o">&lt;</span><span class="sr">/p</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="dl">"</span><span class="s2">div1</span><span class="dl">"</span><span class="o">&gt;&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+    
+    <span class="kd">function</span> <span class="nx">setPos</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">lt</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">lat</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span>
+        <span class="kd">const</span> <span class="nx">lng</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">lon</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span>
+        <span class="nx">setLat</span><span class="p">(</span><span class="nx">lt</span><span class="p">);</span>
+        <span class="nx">setLon</span><span class="p">(</span><span class="nx">lng</span><span class="p">);</span>
+        <span class="nx">map</span><span class="p">.</span><span class="nx">current</span><span class="p">.</span><span class="nx">setView</span><span class="p">([</span><span class="nx">lt</span><span class="p">,</span> <span class="nx">lng</span><span class="p">],</span> <span class="mi">14</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">LeafletMap2</span><span class="p">;</span>
+</code></pre></div></div>
+<p>What is this empty array? It’s an array of dependencies: a series of props or state variables which will trigger a re-run of the effect if they change. You can fill this array with such props or state variables if you want re-running the effect to be triggered if any props or state variables change. If the array is empty, however, you are specifying that the effect should <em>never</em> be re-run: it should only run once when the component first loads.</p>
+
+<h2 id="exercise">Exercise</h2>
+
+<ul>
+  <li>Re-write the first example, which counts the number of renderings, so that the number of renderings is stored in a ref rather than a global variable.</li>
+  <li>
+    <p><strong>UPDATED for clarity</strong> : Create a new version of your exercise from last week in which you created two separate “work” and “leisure” todo lists. This new version should have a slightly simpler structure:</p>
+
+    <ul>
+      <li>A parent component, containing two Todo List components as described below;</li>
+      <li>
+        <p>Two Todo List components, one for work and one for leisure. These should be simpler than in the exercise last week: they should include the input form and the todo list in <em>one</em> component rather than separating the input and display functionality into separate components.</p>
+      </li>
+      <li>Add functionality to the parent component (e.g. a button) to swap the order in which the two Todo lists are rendered, using keys.</li>
+    </ul>
+  </li>
+  <li>
+    <p>Complete Question 4 from last week (AJAX music search), ensuring that you use an effect to connect to the server from the parent component. The effect should re-run each time the parent component updates if the <code>artist</code> state variable updates. <strong>IMPORTANT</strong>: you should ensure that the effect only runs if the <code>artist</code> state variable changes. If you do not, your application might make repeated requests to the Hikar server, which could trigger your IP address getting banned from making requests to the server due to security software installed on it. If you’re not sure about this, please contact me.</p>
+  </li>
+  <li>
+    <p>Try out the Leaflet map example above. You’ll need to link Leaflet to your HTML <code class="language-plaintext highlighter-rouge">head</code> section (see below).</p>
+  </li>
+  <li>Enhance your Leaflet map so that the user can search for a place over AJAX by connecting to this web API: <code class="language-plaintext highlighter-rouge">https://opentrailview.org/nomproxy.php?q=place_name
+</code>, where <code class="language-plaintext highlighter-rouge">place_name</code> is the place to search for. When the AJAX search has completed, set the <code class="language-plaintext highlighter-rouge">lat</code> and <code class="language-plaintext highlighter-rouge">lon</code> inside the state to be the latitude and longitude of the first result within the JSON returned by the API.</li>
+</ul>
+
+<h4 id="html-needed-for-leaflet-map">HTML needed for Leaflet map</h4>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">'stylesheet'</span> <span class="na">href=</span><span class="s">'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css'</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">'text/javascript'</span> <span class="na">src=</span><span class="s">'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js'</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;style&gt;</span>
+<span class="nf">#div1</span> <span class="p">{</span> <span class="nl">width</span><span class="p">:</span><span class="m">800px</span><span class="p">;</span> <span class="nl">height</span><span class="p">:</span> <span class="m">600px</span><span class="p">;</span> <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div></div>
+
+<h4 id="advanced-exercise">Advanced exercise</h4>
+
+<p><strong>Advanced</strong>: If you get that done, develop the map application so you have a <code class="language-plaintext highlighter-rouge">SearchResults</code> component (within the parent component) which should list all results (not just the first). Each result should have a button labelled “Go to this location” which, when clicked, should set the latitude and longitude of the map to that location.</p>
+
+<p>Here is an example of some JSX showing how you could pass parameters into an <code class="language-plaintext highlighter-rouge">onClick</code> handler. You could set the <code class="language-plaintext highlighter-rouge">onClick</code> handler to be an arrow function, and then inside the arrow function, call another function (<code class="language-plaintext highlighter-rouge">goTo()</code> here) which moves the map to the specified location.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">'button'</span> <span class="na">onClick=</span><span class="s">{()</span> <span class="err">=</span><span class="nt">&gt;</span> { goTo(result.lat,result.lon) } } /&gt;
+</code></pre></div></div>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

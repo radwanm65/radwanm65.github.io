@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Week 7 - Introduction to Next.js | Course Notes</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Week 7 - Introduction to Next.js" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Course material" />
+<meta property="og:description" content="Course material" />
+<link rel="canonical" href="index.html" />
+<meta property="og:url" content="https://nwcourses.github.io/COM623/old/week_7/" />
+<meta property="og:site_name" content="Course Notes" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Week 7 - Introduction to Next.js" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Course material","headline":"Week 7 - Introduction to Next.js","url":"https://nwcourses.github.io/COM623/old/week_7/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="../../../assets/css/style.css%3Fv=d5062f5581830390b9c21268f82f9c13411b2030.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nwcourses.github.io/">Course Notes</a></h1>
+      
+
+      <h1 id="week-7---introduction-to-nextjs">Week 7 - Introduction to Next.js</h1>
+
+<h2 id="what-is-nextjs">What is Next.js?</h2>
+
+<p>Next.js (see <a href="https://nextjs.org">here</a> ) is a framework for building React-based client-server web applications. With Next.js, you can develop both the client and the server parts of your application without having to use any other frameworks or libraries aside from React and ReactDOM. Next.js makes it easy to develop common application features such as routing and form submissions. With Next.js we can develop an application which consists of both client-side and server-side React components (it is possible to process React components on the server using Node.js). It also comes with an inbuilt, Node.js based server, so when you run a Next.js application, a server is automatically started.</p>
+
+<p>Next.js offers the facility to <em>build your project into a bundle</em> without having to execute the Webpack commands or configure Babel. This is done with the custom <a href="https://nextjs.org/docs/architecture/nextjs-compiler">Next.js Compiler</a>. It is all done as part of the <code class="language-plaintext highlighter-rouge">next</code> command-line utility which comes with Next.js.</p>
+
+<p>Next.js has an automatic <a href="https://nextjs.org/docs/architecture/fast-refresh">Fast Refresh</a> facility in which your code is “hot-reloaded” if you change it. So you can fix errors on the go, rather like the Webpack Dev Server, without having to reload your page. Furthermore, in development mode, extensive error information is displayed in the browser when an error occurs.</p>
+
+<p>Furthermore Next.js has various <a href="https://nextjs.org/docs/app/building-your-application/caching">caching features</a> to optimise the delivery of your application.</p>
+
+<h2 id="creating-a-nextjs-project">Creating a Next.js project</h2>
+
+<p><em>See <a href="https://nextjs.org/docs/getting-started/installation">the website</a></em></p>
+
+<p>You can use the <code class="language-plaintext highlighter-rouge">create-next-app</code> tool to automatically create a Next.js project with certain files in place. However, to better understand the structure of a Next.js application, we will do so from first principles.</p>
+
+<p>Make a folder for your project and change directory to it:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mkdir next-project
+cd next-project
+</code></pre></div></div>
+
+<p>Install dependencies, including Next.js itself plus React and React DOM as follows. Note that I have also added <code class="language-plaintext highlighter-rouge">better-sqlite3</code> here, this is the SQLite library you used last year and is not necessary for a Next.js application, but we will be using it, so we may as well install it now.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install next@latest react@latest react-dom@latest better-sqlite3
+</code></pre></div></div>
+
+<p>This will create a basic <code class="language-plaintext highlighter-rouge">package.json</code>.</p>
+
+<p>You should then add some scripts to your <code class="language-plaintext highlighter-rouge">package.json</code> to perform standard actions:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  }
+</code></pre></div></div>
+
+<p>Of these:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">dev</code> builds your project and starts a server running your project in development mode,</li>
+  <li><code class="language-plaintext highlighter-rouge">build</code> builds your project, but does not start a server,</li>
+  <li><code class="language-plaintext highlighter-rouge">start</code> starts a server running your project in production mode, and</li>
+  <li><code class="language-plaintext highlighter-rouge">lint</code> checks your code for potential problems (linting).</li>
+</ul>
+
+<h2 id="nextjs-routing">Next.js routing</h2>
+
+<p><em>See <a href="https://nextjs.org/docs/app/building-your-application/routing">the website</a></em></p>
+
+<p>Routing is one of the most fundamental aspects of Next.js, so we will start with a look at Next.js routing.</p>
+
+<p>The key approach to setting up routes in your Next.js application is to use the <strong>App Router</strong>. This is a standard way of setting up routes for your application (remember when we looked at Express last year, we setup routes; Next.js is independent of Express and uses a different approach).</p>
+
+<p>With the App Router, we place our routes in the <code class="language-plaintext highlighter-rouge">app</code> folder, which you will need to create, e.g.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mkdir app
+</code></pre></div></div>
+
+<h3 id="layouts-and-pages">Layouts and Pages</h3>
+
+<p>With the App Router you create two types of component: <code class="language-plaintext highlighter-rouge">layouts</code> and <code class="language-plaintext highlighter-rouge">pages</code>. What are these?</p>
+
+<ul>
+  <li><em>Layouts</em> are essentially a “frame” for our page. In a layout we define our page body, this allows us to do things such as a common layout and CSS for a range of pages.</li>
+  <li><em>Pages</em> represent individual pages. These are React components which should return JSX. However, by default, they are <em>server-side</em> components: components which are processed by node.js on the server. Server-side components are a feature of React, though Next.js provides a framework to allow us to easily use them.</li>
+</ul>
+
+<h3 id="hello-world-in-nextjs">Hello World in Next.js</h3>
+
+<p>So with that in mind, here is Hello World in Next.js.</p>
+
+<p>We first create a layout file, which must be called <code class="language-plaintext highlighter-rouge">layout.js</code>.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">RootLayout</span><span class="p">({</span><span class="nx">children</span><span class="p">})</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">children</span><span class="si">}</span>
+        <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">RootLayout</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>The layout is a React component. Hopefully you can see that the layout contains a function which returns JSX in the normal React way, containing, essentially, a “frame” for your page into which can be inserted content. When your page is rendered, any components are passed to the function in the <code class="language-plaintext highlighter-rouge">children</code> prop, so we return JSX containing an HTML page with the children inserted into the <code class="language-plaintext highlighter-rouge">body</code>.</p>
+
+<p>Next we create a page, which must be called <code class="language-plaintext highlighter-rouge">page.js</code>:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Page</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello Next.js!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Page</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>A <em>page</em> is an individual page in your application. Note how it consists of a simple React component which returns JSX containing an <code class="language-plaintext highlighter-rouge">h1</code> heading with a Hello World message.</p>
+
+<p>The file <em>must</em> be called <code class="language-plaintext highlighter-rouge">page.js</code>, however the component need not be called <code class="language-plaintext highlighter-rouge">Page</code>.</p>
+
+<p>When Next.js builds your page, it will use the layout and then insert the page’s JSX into the <code class="language-plaintext highlighter-rouge">children</code> parameter of the props of your layout.</p>
+
+<h3 id="test-this-out">Test this out!</h3>
+
+<p>Test out your application by entering:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm run dev
+</code></pre></div></div>
+<p>This will start your app in development mode, running on port 3000. So if you enter</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://localhost:3000
+</code></pre></div></div>
+<p>in your browser, you should see the Hello World message. Because the components are directly in the <code class="language-plaintext highlighter-rouge">app</code> folder, they correspond to the root (top-level) route.</p>
+
+<p>`</p>
+<h3 id="creating-a-new-route">Creating a new route</h3>
+
+<p>As you saw last year in WAD, a full web app will need to set up a range of different <em>routes</em>, all of which perform different functions. In Next.js, we define routes by creating <em>folders</em> which map to routes.</p>
+
+<p>To illustrate this, we are going to start developing a version of the “HitTastic” music site using Next.js. First of all change your Hello World component as follows, so that it is now a HitTastic! index page:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Page</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>HitTastic!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Welcome to HitTastic!<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+ <span class="p">}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Page</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Now create an ‘about’ page. Inside your <code class="language-plaintext highlighter-rouge">app</code> folder, create another folder named <code class="language-plaintext highlighter-rouge">about</code> and change directory to it:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mkdir about
+cd about
+</code></pre></div></div>
+
+<p>In here, create a new <code class="language-plaintext highlighter-rouge">page.js</code> containing a new component:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Page</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span><span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>About HitTastic!<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>HitTastic! is the top site for music. Whether it's rock, pop, indie, rap or pure liquid cheese you're into, you're sure to find it here.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Page</span><span class="p">;</span>
+</code></pre></div></div>
+<p>Folders correspond to routes in Next.js. So, you can access it in your browser with:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://localhost:3000/about
+</code></pre></div></div>
+<p>`</p>
+<h3 id="the-value-of-the-layout-in-providing-common-content-for-each-page">The value of the layout in providing common content for each page</h3>
+
+<p>As discussed above, the layout can provide common content for each page. We will now explore this: Create a small CSS file, <code class="language-plaintext highlighter-rouge">style.css</code>, and save it in your <code class="language-plaintext highlighter-rouge">app</code> folder:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">body</span> <span class="p">{</span>
+    <span class="nl">background-color</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">white</span><span class="p">;</span>
+    <span class="nl">text-decoration</span><span class="p">:</span> <span class="nb">none</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#imgdiv</span> <span class="p">{</span>
+    <span class="nl">text-align</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Now import this into your <code class="language-plaintext highlighter-rouge">layout.js</code> by adding an <code class="language-plaintext highlighter-rouge">import</code> statement at the top:</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="dl">'</span><span class="s1">./style.css</span><span class="dl">'</span><span class="p">;</span>
+</code></pre></div></div>
+<p>This will result in the CSS being applied to <em>each page</em> in the current route path and its descendants.</p>
+
+<p>Furthermore we can add <em>page content</em> which will be shared across pages in the layout:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">styles</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./style.css</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">RootLayout</span><span class="p">({</span><span class="nx">children</span><span class="p">})</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="p">=</span><span class="s">'imgdiv'</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="p">=</span><span class="s">'/hittastic.png'</span> <span class="na">alt</span><span class="p">=</span><span class="s">'HitTastic! logo'</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">children</span><span class="si">}</span>
+        <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">RootLayout</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Note how our page now contains a <code class="language-plaintext highlighter-rouge">div</code> with an ID of <code class="language-plaintext highlighter-rouge">imgdiv</code> containing an image logo. The children are then inserted into the layout after the image. As a result, all pages will contain the logo with the specific content for each page appearing below the image.</p>
+
+<h4 id="including-static-content-in-your-application">Including static content in your application</h4>
+
+<p>Static content (such as images) should be placed in your application’s <code class="language-plaintext highlighter-rouge">public</code> folder, which should be a subfolder of the overall application folder. Download the <code class="language-plaintext highlighter-rouge">hittastic.png</code> image from <a href="https://github.com/nwcourses/nwcourses.github.io/blob/master/images/hittastic.png">here</a>, create a <code class="language-plaintext highlighter-rouge">public</code> folder, and save the image in the <code class="language-plaintext highlighter-rouge">public</code> folder.</p>
+
+<p>Try requesting both your pages (the Hello World page and the About page) now. Do both of them have the CSS and logo applied?</p>
+
+<h3 id="passing-parameters-to-routes">Passing parameters to routes</h3>
+
+<p>There are various ways in which we can pass parameters to routes. We can either pass a <strong>query string</strong> or include the parameter in the route. We will look at both of these.</p>
+
+<h4 id="query-strings">Query strings</h4>
+
+<p>Create a new ‘search’ component as follows, inside a folder called <code class="language-plaintext highlighter-rouge">search</code> within <code class="language-plaintext highlighter-rouge">app</code>.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Page</span><span class="p">({</span><span class="nx">searchParams</span><span class="p">})</span> <span class="p">{</span>
+    <span class="k">return</span><span class="p">(</span>
+        <span class="p">&lt;&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>Searching for <span class="si">{</span><span class="nx">searchParams</span><span class="p">.</span><span class="nx">artist</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>You are searching for the artist <span class="si">{</span><span class="nx">searchParams</span><span class="p">.</span><span class="nx">artist</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+        <span class="p">&lt;/&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Page</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Try requesting this, with a <em>query string</em> containing an artist, e.g.:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://localhost:3000/search?artist=Oasis
+</code></pre></div></div>
+
+<p>Note how the component receives a <em>prop</em> called <code class="language-plaintext highlighter-rouge">searchParams</code>. This is an object containing all the query string parameters sent to the component. We can access each individual query string parameter by using the corresponding property in the <code class="language-plaintext highlighter-rouge">searchParams</code> prop, e.g. <code class="language-plaintext highlighter-rouge">searchParams.artist</code> for the parameter <code class="language-plaintext highlighter-rouge">artist</code>.</p>
+
+<h3 id="exercise-1">Exercise 1</h3>
+
+<p>Change your code so that it will interpret a second query string parameter <code class="language-plaintext highlighter-rouge">title</code> and display it as well as the artist.</p>
+
+<p>Hint: to pass in two query string parameters, separate them with an ampersand &amp;, e.g:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://localhost:3000/search?artist=Oasis&amp;title=Wonderwall
+</code></pre></div></div>
+
+<h4 id="including-parameters-in-the-route">Including parameters in the route</h4>
+
+<p>Alternatively, as you have seen when working with Express, you may pass the parameters through the route, e.g.:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://localhost:3000/artistSearch/Oasis
+</code></pre></div></div>
+
+<p>How can we do this?</p>
+
+<p>We need to <strong>make a folder</strong> for the artist parameter, in the same way that we make folders for the static part of the route such as <code class="language-plaintext highlighter-rouge">artistSearch</code>. To indicate that the folder represents a parameter, we name it so that it begins and ends with square brackets, e.g. <code class="language-plaintext highlighter-rouge">[artist]</code>. You can create such a folder in the normal way:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mkdir [artist]
+</code></pre></div></div>
+
+<p>Within the parameter folder, i.e. <code class="language-plaintext highlighter-rouge">[artist]</code> in this case, you can create a component:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function Page({params}) {
+    return(
+        &lt;&gt;
+        &lt;h2&gt;Searching for {params.artist} (route parameter version)&lt;/h2&gt;
+        &lt;p&gt;You are searching for the artist {params.artist}&lt;/p&gt;
+        &lt;/&gt;
+    );
+}
+
+export default Page;
+</code></pre></div></div>
+
+<p>Note that it’s almost the same as the query string version, but we use the <code class="language-plaintext highlighter-rouge">params</code> prop rather than <code class="language-plaintext highlighter-rouge">searchParams</code>. Note we use <code class="language-plaintext highlighter-rouge">params.artist</code> to match the name of the parameter (<code class="language-plaintext highlighter-rouge">artist</code>): note how we named the parameter folder <code class="language-plaintext highlighter-rouge">[artist]</code> when creating our folders.</p>
+
+<h3 id="exercise-2">Exercise 2</h3>
+
+<p>Create a component to handle a route with both artist and title e.g.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://localhost:3000/artist/[artist]/title/[title]
+</code></pre></div></div>
+
+<p>Like the query string exercise above, it should display both the artist and the title.</p>
+
+<h3 id="exercise-3---connecting-to-a-database">Exercise 3 - connecting to a database</h3>
+
+<p>The exercise allows you to turn the previous examples into something useful by connecting them to a database.</p>
+<ul>
+  <li>Create a <code class="language-plaintext highlighter-rouge">resources</code> folder as a sub-folder of your overall project folder.</li>
+  <li>Download the HitTastic! database from <a href="https://nwcourses.github.io/COM518/wadsongs.db">here</a> and save it in the <code class="language-plaintext highlighter-rouge">resources</code> folder.</li>
+  <li>Using <a href="https://nwcourses.github.io/COM518/topic2.html">the database notes from last year</a>, enhance <em>either</em> the query string-based component <em>or</em> the route parameter-based component so that it actually shows all songs by the chosen artist within the component. You should map the database results to JSX, as you’ve done before, and then render that JSX. <strong>Hint</strong>: to obtain the correct location of the database file, use <code class="language-plaintext highlighter-rouge">process.cwd()</code> to get the current directory (the root folder of the project). So you will need:
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Database</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()}</span><span class="s2">/resources/wadsongs.db`</span><span class="p">);</span>
+</code></pre></div>    </div>
+    <p>to open the database, once saved in the <code class="language-plaintext highlighter-rouge">resources</code> folder.</p>
+  </li>
+</ul>
+
+<h3 id="links">Links</h3>
+
+<p>Next.js has its own <code class="language-plaintext highlighter-rouge">Link</code> component for linking between pages, which ensures the routing is correct. This is quite simple, and similar to the normal <code class="language-plaintext highlighter-rouge">a</code> tag, e.g:</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">&lt;</span><span class="nc">Link</span> <span class="na">href</span><span class="p">=</span><span class="s">'hittastic/about'</span><span class="p">&gt;</span>About HitTastic!<span class="p">&lt;/</span><span class="nc">Link</span><span class="p">&gt;</span>
+</code></pre></div></div>
+
+<h2 id="forms-client-components-and-server-components">Forms, client components, and server components</h2>
+
+<p>How can we implement forms in Next.js? One method is to use a standard HTML form with an <code class="language-plaintext highlighter-rouge">action</code> pointing to a route which performs a search. However, Next.js has various more specialised ways of executing forms. Different approaches are taken for searches (GET requests) and adding or modifying data (POST requests).</p>
+
+<h3 id="searches-get-requests">Searches (GET requests)</h3>
+
+<p>A key thing you need to understand here is the difference between <em>client componnents</em> and <em>server components</em>. Both are written using React, but client components are processed by the client (the browser) while server components are processed by the server (Node.js based). In Next.js, the default is to use server components. However there are certain circumstances in which you might want to use client components instead, such as when performing AJAX requests. We mark a client component by adding the line</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"use client"
+</code></pre></div></div>
+<p>as the very first line in the component. This will setup the Next.js build system to send the component to the client, rather than process the component on the server.</p>
+
+<p>A client-side component would basically be a standard React component of the kind you have seen already, which could make an AJAX call to an API, e.g:</p>
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="dl">'</span><span class="s1">use client</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Page</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">pois</span><span class="p">,</span> <span class="nx">setPOIs</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">([]);</span>
+
+    <span class="kd">const</span> <span class="nx">poisJSX</span> <span class="o">=</span> <span class="nx">pois</span><span class="p">.</span><span class="nx">map</span> <span class="p">(</span><span class="nx">poi</span> <span class="o">=&gt;</span> <span class="p">&lt;</span><span class="nt">li</span> <span class="na">key</span><span class="p">=</span><span class="si">{</span><span class="nx">poi</span><span class="p">.</span><span class="nx">ID</span><span class="si">}</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">poi</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span> <span class="si">{</span><span class="nx">poi</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;);</span>
+
+    <span class="k">async</span> <span class="kd">function</span> <span class="nx">search</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">type</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">poiType</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span>
+        <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">`/api/poi?type=</span><span class="p">${</span><span class="nx">type</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">pois</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+        <span class="nx">setPOIs</span><span class="p">(</span><span class="nx">pois</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="k">return</span><span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">id</span><span class="p">=</span><span class="s">'poiType'</span> <span class="na">type</span><span class="p">=</span><span class="s">'text'</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="p">=</span><span class="s">'button'</span> <span class="na">value</span><span class="p">=</span><span class="s">'Find POIs!'</span> <span class="na">onClick</span><span class="p">=</span><span class="si">{</span><span class="nx">search</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="si">{</span> <span class="nx">poisJSX</span> <span class="si">}</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Page</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>There is nothing new about the above, however if you place it in an appropriate folder in a Next.js application, you will be able to access it via an appropriate route.</p>
+
+<h3 id="developing-json-apis-in-nextjs">Developing JSON APIs in Next.js</h3>
+
+<p><em>See <a href="https://nextjs.org/docs/app/building-your-application/routing/route-handlers">here</a> for more detail.</em></p>
+
+<p>Next.js uses its own approach to JSON APIs, known as <strong>route handlers</strong>. In the appropriate route folder, you create a file called <code class="language-plaintext highlighter-rouge">route.js</code>. Note that there <strong>must</strong> not already be a <code class="language-plaintext highlighter-rouge">page.js</code> in the same folder.</p>
+
+<p>Typically, a folder called <code class="language-plaintext highlighter-rouge">api</code>, within the <code class="language-plaintext highlighter-rouge">app</code> folder, would be used to store JSON APIs. Here is an example which would work with the above AJAX front end if it were placed in a folder <code class="language-plaintext highlighter-rouge">poi</code> within the <code class="language-plaintext highlighter-rouge">api</code> folder within <code class="language-plaintext highlighter-rouge">app</code>:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Database</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">better-sqlite3</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">GET</span><span class="p">(</span><span class="nx">request</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">URL</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Database</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()}</span><span class="s2">/assets/poi.db`</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">stmt</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="dl">"</span><span class="s2">SELECT * FROM pointsofinterest WHERE type=?</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span><span class="nx">url</span><span class="p">.</span><span class="nx">searchParams</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">type</span><span class="dl">'</span><span class="p">)]);</span>
+    <span class="k">return</span> <span class="nx">Response</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">results</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Note how we export one function called <code class="language-plaintext highlighter-rouge">GET</code>, this will correspond to a <code class="language-plaintext highlighter-rouge">GET</code> request to the API endpoint <code class="language-plaintext highlighter-rouge">/api/poi</code> with a query string parameter called <code class="language-plaintext highlighter-rouge">type</code>.</p>
+
+<p>We could create another API route by including the search term in the route directly (without a query string), e.g.:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://localhost:3000/api/poi/hotel
+</code></pre></div></div>
+
+<p>We would, just like non-API routes, need to create a folder representing the type parameter, e.g. <code class="language-plaintext highlighter-rouge">[type]</code>, to represent the POI type. We can then access this via an optional second parameter to the <code class="language-plaintext highlighter-rouge">GET</code> function, e.g:</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Database</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">better-sqlite3</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">GET</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="p">{</span><span class="nx">params</span><span class="p">})</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">URL</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Database</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()}</span><span class="s2">/assets/poi.db`</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">stmt</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="dl">"</span><span class="s2">SELECT * FROM pointsofinterest WHERE type=?</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">stmt</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span><span class="nx">params</span><span class="p">.</span><span class="nx">type</span><span class="p">]);</span>
+    <span class="k">return</span> <span class="nx">Response</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">results</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>The second parameter to <code class="language-plaintext highlighter-rouge">GET</code> contains an object which can be deconstructed to obtain the <code class="language-plaintext highlighter-rouge">params</code>, i.e. the route parameters. Hopefully you can see that the approach is similar to passing through parameters to a server-side component as we did above.</p>
+
+<h3 id="server-actions-adding-or-updating-data-post-requests">Server Actions: Adding or updating data (POST requests)</h3>
+
+<p><em>See <a href="https://nextjs.org/docs/app/api-reference/functions/server-actions">the Next.js documentation</a></em></p>
+
+<p>To send POST requests the recommended approach is to use <em>server actions</em>, which are basically functions executed by our components which respond to form submissions without having to worry about a separate route.</p>
+
+<p>These make use of hybrid client/server components. We can create these by marking <em>certain functions</em> with “use client” or “use server”, as appropriate.</p>
+
+<p>Here is an example of a component containing a form which adds a new POI. Imagine it’s available via the route <code class="language-plaintext highlighter-rouge">/poi/add</code>, i.e. a <code class="language-plaintext highlighter-rouge">page.js</code> within the <code class="language-plaintext highlighter-rouge">add</code> folder, within the <code class="language-plaintext highlighter-rouge">poi</code> folder, within <code class="language-plaintext highlighter-rouge">app</code>.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use client</span><span class="dl">"</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">createPOI</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./createpoi</span><span class="dl">'</span><span class="p">;</span>
+
+
+<span class="kd">function</span> <span class="nx">AddPOI</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="k">return</span><span class="p">(</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>Add POI<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="p">=</span><span class="si">{</span><span class="nx">createPOI</span><span class="si">}</span><span class="p">&gt;</span>
+        Name: <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="p">=</span><span class="s">'name'</span> <span class="na">id</span><span class="p">=</span><span class="s">'name'</span> <span class="p">/&gt;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        Type: <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="p">=</span><span class="s">'type'</span> <span class="na">id</span><span class="p">=</span><span class="s">'type'</span> <span class="p">/&gt;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        Location: <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="p">=</span><span class="s">'location'</span> <span class="na">id</span><span class="p">=</span><span class="s">'location'</span> <span class="p">/&gt;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="p">=</span><span class="s">'submit'</span> <span class="na">value</span><span class="p">=</span><span class="s">'Go!'</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">AddPOI</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>The server action itself is in another file, <code class="language-plaintext highlighter-rouge">createpoi.js</code>, in the same folder (though this can be changed). Note how we need to label it with “use server”, as it’s being called from a client component. <strong>We cannot put server actions directly inside client components; they must go in a separate file.</strong></p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use server</span><span class="dl">"</span>
+
+<span class="k">import</span> <span class="nx">Database</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">better-sqlite3</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">redirect</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">next/navigation</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">createPOI</span><span class="p">(</span><span class="nx">formData</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Database</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()}</span><span class="s2">/assets/pointsofinterest.db`</span><span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">stmt</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="dl">"</span><span class="s2">INSERT INTO pois(name,type,location) VALUES (?,?,?)</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">stmt</span><span class="p">.</span><span class="nx">run</span><span class="p">([</span><span class="nx">formData</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">),</span> <span class="nx">formData</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">type</span><span class="dl">'</span><span class="p">),</span> <span class="nx">formData</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">location</span><span class="dl">'</span><span class="p">)]);</span>
+    <span class="nx">redirect</span><span class="p">(</span><span class="dl">"</span><span class="s2">/poi/add</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="p">{</span> <span class="nx">createPOI</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<p>Note how this is a <em>client component containing a server action</em> It’s mostly client, due to the “use client” at the top.</p>
+
+<p>Note how the form action is, rather than a URL, the <code class="language-plaintext highlighter-rouge">createPOI()</code> function. So when the form is submitted, it will send it to <code class="language-plaintext highlighter-rouge">createPOI()</code>, running on the server (Next.js deals with the “magic” allowing this to happen, essentially the code is processed into client and server parts).</p>
+
+<p>Inside the <code class="language-plaintext highlighter-rouge">createPOI()</code> function, we read the form data that was sent using the <code class="language-plaintext highlighter-rouge">formData</code> parameter. This is a parameter of type <code class="language-plaintext highlighter-rouge">FormData</code>, which is a standard JavaScript object (not part of Next.js or React) allowing you to read form data that was sent. Note how we retrieve each item of form data with the <code class="language-plaintext highlighter-rouge">get()</code> method, passing in the ID of the form field as an argument.</p>
+
+<p>Note also how we use <code class="language-plaintext highlighter-rouge">redirect()</code> to redirect the user back to the route when the POI has been added, which will reload the form into the client.</p>
+
+<h3 id="exercise-4">Exercise 4</h3>
+
+<ul>
+  <li>By developing an API route handler, implement an AJAX-based song search (by artist) using your HitTastic! SQLite database.</li>
+  <li>Create a form allowing the user to add a new song to the database and a server action to actually add the song to the database.</li>
+</ul>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

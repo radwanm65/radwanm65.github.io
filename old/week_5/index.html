@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Week 5: React Hooks | Course Notes</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Week 5: React Hooks" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Course material" />
+<meta property="og:description" content="Course material" />
+<link rel="canonical" href="index.html" />
+<meta property="og:url" content="https://nwcourses.github.io/COM623/old/week_5/" />
+<meta property="og:site_name" content="Course Notes" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Week 5: React Hooks" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Course material","headline":"Week 5: React Hooks","url":"https://nwcourses.github.io/COM623/old/week_5/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="../../../assets/css/style.css%3Fv=d5062f5581830390b9c21268f82f9c13411b2030.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://nwcourses.github.io/">Course Notes</a></h1>
+      
+
+      <h1 id="week-5-react-hooks">Week 5: React Hooks</h1>
+
+<h2 id="what-is-a-hook">What is a hook?</h2>
+
+<p><em>See <a href="https://react.dev/reference/react">React documentation</a></em></p>
+
+<p>A Hook in React is a function which allows us to use (“hook into”) React functionality from a component rendering function. Hooks perform various functions, such as setting up state (<code class="language-plaintext highlighter-rouge">useState</code>), refs (<code class="language-plaintext highlighter-rouge">useRef</code>) or effects (<code class="language-plaintext highlighter-rouge">useEffect</code>). The key thing about Hooks is that they are designed to be called from the rendering function, and are designed to complete quickly so should not contain any time consuming code. Hooks (particularly custom Hooks) frequently call other Hooks.</p>
+
+<p>So far we have seen these Hooks:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">useState()</code>;</li>
+  <li><code class="language-plaintext highlighter-rouge">useEffect()</code>;</li>
+  <li><code class="language-plaintext highlighter-rouge">useRef()</code>.</li>
+</ul>
+
+<p>All of these are Hooks because they allow components to use these features of React (state, effects, refs) but none of these functions are actually responsible for rendering.</p>
+
+<p>Functions acting as Hooks always begin with <code class="language-plaintext highlighter-rouge">use</code>.</p>
+
+<p>Today we will look at some further Hooks (memos, context) and see how we can develop our own.</p>
+
+<h2 id="the-memo-hook-preventing-unnecessary-computations-when-the-state-does-not-change">The Memo Hook: Preventing unnecessary computations when the state does not change</h2>
+
+<p><em>See <a href="https://react.dev/reference/react/useMemo">React documentation</a></em></p>
+
+<p>The performance of our application can go down if we needlessly re-render certain data each time the component re-renders. For example, we might have a component which performs an AJAX request and stores the results in state, but also has other data which is stored in state. The component might convert the JSON returned by the AJAX into JSX, which could be time-consuming if there is a lot of data in the JSON. This is fine if the JSON changes, but what if one of the other state variables change? Here is an example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">InefficientComponent</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span><span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="dl">""</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">results</span><span class="p">,</span><span class="nx">setResults</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">([]);</span>
+
+
+    <span class="kd">const</span> <span class="nx">songsList</span> <span class="o">=</span> <span class="nx">results</span><span class="p">.</span><span class="nx">map</span> <span class="p">(</span> <span class="nx">song</span> <span class="o">=&gt;</span> <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Song</span><span class="p">:</span> <span class="p">{</span><span class="nx">song</span><span class="p">.</span><span class="nx">title</span><span class="p">}</span> <span class="nl">Artist</span><span class="p">:</span> <span class="p">{</span><span class="nx">song</span><span class="p">.</span><span class="nx">artist</span><span class="p">}</span> <span class="nl">Year</span><span class="p">:</span> <span class="p">{</span><span class="nx">song</span><span class="p">.</span><span class="nx">year</span><span class="p">}</span> <span class="o">&lt;</span><span class="sr">/p&gt;</span><span class="se">)</span><span class="err">;
+</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+        <span class="nx">Name</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span> <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">updateName</span><span class="p">}</span> <span class="sr">/&gt;&lt;br /</span><span class="o">&gt;</span>
+        <span class="nx">Name</span> <span class="p">{</span><span class="nx">name</span><span class="p">}</span>
+        <span class="o">&lt;</span><span class="sr">/p</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+        <span class="nx">Artist</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">artist</span><span class="dl">'</span> <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">doAjax</span><span class="p">}</span> <span class="sr">/&gt; &lt;br /</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="nx">Results</span> <span class="p">{</span><span class="nx">songsList</span><span class="p">}</span>
+        <span class="o">&lt;</span><span class="sr">/p</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">updateName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setName</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">async</span> <span class="kd">function</span> <span class="nx">doAjax</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">resp</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">`https://hikar.org/webapp/temp/artist/</span><span class="p">${</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">artist</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+        <span class="nx">setResults</span><span class="p">(</span><span class="nx">json</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">InefficientComponent</span><span class="p">;</span>
+</code></pre></div></div>
+<p>This is inefficient as the component will be re-rendered not only if a new AJAX request is made, but <em>also</em> if the name state variable is updated. Thus the relatively slow conversion from JSON to JSX will occur even if the JSON data has not changed. This is clearly inefficient. What we can do instead is to set up a <code class="language-plaintext highlighter-rouge">useMemo</code> hook. A <code class="language-plaintext highlighter-rouge">useMemo</code> hook allows us to only do a transformation if certain data has changed, e.g.:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">MemoComponent</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span><span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="dl">""</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">results</span><span class="p">,</span><span class="nx">setResults</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">([]);</span>
+
+
+    <span class="kd">const</span> <span class="nx">songsList</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useMemo</span> <span class="p">(</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">running map</span><span class="dl">"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">results</span><span class="p">.</span><span class="nx">map</span> <span class="p">(</span> <span class="nx">song</span> <span class="o">=&gt;</span> <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="na">Song</span><span class="p">:</span> <span class="p">{</span><span class="nx">song</span><span class="p">.</span><span class="nx">title</span><span class="p">}</span> <span class="nl">Artist</span><span class="p">:</span> <span class="p">{</span><span class="nx">song</span><span class="p">.</span><span class="nx">artist</span><span class="p">}</span> <span class="nl">Year</span><span class="p">:</span> <span class="p">{</span><span class="nx">song</span><span class="p">.</span><span class="nx">year</span><span class="p">}</span> <span class="o">&lt;</span><span class="sr">/p&gt;</span><span class="se">)</span><span class="err">;
+</span>    <span class="p">},</span> <span class="p">[</span><span class="nx">results</span><span class="p">]</span> <span class="p">);</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+        <span class="nx">Name</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span> <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">updateName</span><span class="p">}</span> <span class="sr">/&gt;&lt;br /</span><span class="o">&gt;</span>
+        <span class="nx">Name</span> <span class="p">{</span><span class="nx">name</span><span class="p">}</span>
+        <span class="o">&lt;</span><span class="sr">/p</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+        <span class="nx">Artist</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">artist</span><span class="dl">'</span> <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">doAjax</span><span class="p">}</span> <span class="sr">/&gt; &lt;br /</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="nx">Results</span> <span class="p">{</span><span class="nx">songsList</span><span class="p">}</span>
+        <span class="o">&lt;</span><span class="sr">/p</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">updateName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setName</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">async</span> <span class="kd">function</span> <span class="nx">doAjax</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">resp</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">`https://hikar.org/webapp/temp/artist/</span><span class="p">${</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">artist</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">json</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+        <span class="nx">setResults</span><span class="p">(</span><span class="nx">json</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">MemoComponent</span><span class="p">;</span>
+</code></pre></div></div>
+<p>Note that the code to transform the JSON to JSX is now wrapped in a function supplied as an argument to <code class="language-plaintext highlighter-rouge">React.useMemo()</code>. <code class="language-plaintext highlighter-rouge">React.useMemo()</code> takes two arguments:</p>
+<ul>
+  <li>a function which only runs if certain state data has updated;</li>
+  <li>an array containing the state variables which trigger the function to run if they change.</li>
+</ul>
+
+<p>So here, the function supplied to <code class="language-plaintext highlighter-rouge">React.useMemo()</code> transforms the JSON to JSX, but it <em>only</em> runs if <code class="language-plaintext highlighter-rouge">results</code> - the state variable containing the JSON from the server - changes. If any other state variable changes, the transformation will not occur.</p>
+
+<h2 id="context-with-the-usecontext-hook">Context with the <code class="language-plaintext highlighter-rouge">useContext()</code> Hook</h2>
+
+<p><em>See <a href="https://react.dev/reference/react/useContext">React documentation</a></em></p>
+
+<p>Imagine you have a highly nested sequence of components. For example, one component which has child components, and the child components have child components of its own. Imagine you want to share data between all these components, from the parent (first level), through its children (second level) and then down to <em>their</em> children (third level).</p>
+
+<p>We could pass state down through props, as we have seen already in Week 3, and in some cases this is the best way, but it can become cumbersome if we have to pass <em>many</em> items of data down through the tree to the lowest level components.</p>
+
+<h3 id="example">Example</h3>
+
+<p>This is an example of sharing state through props with three levels of component, <code class="language-plaintext highlighter-rouge">Nested1</code>, <code class="language-plaintext highlighter-rouge">Nested2</code> and <code class="language-plaintext highlighter-rouge">Nested3</code>.</p>
+
+<h4 id="nested1">Nested1</h4>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Nested2</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Nested2</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Nested1</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span> <span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="dl">""</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">updateState</span><span class="p">}</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">Go!</span><span class="dl">'</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">Nested2</span> <span class="nx">name</span><span class="o">=</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">updateState</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setName</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Nested1</span><span class="p">;</span>
+</code></pre></div></div>
+<h4 id="nested2">Nested2</h4>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Nested3</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Nested3</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Nested2</span><span class="p">({</span><span class="nx">name</span><span class="p">})</span> <span class="p">{</span>
+    <span class="k">return</span><span class="p">(</span>
+        <span class="o">&lt;&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="p">{</span><span class="nx">name</span><span class="p">}</span><span class="o">!&lt;</span><span class="sr">/h1</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">Nested3</span> <span class="nx">name</span><span class="o">=</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+<span class="p">}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Nested2</span><span class="p">;</span>
+</code></pre></div></div>
+<h4 id="nested3">Nested3</h4>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Nested3</span><span class="p">({</span><span class="nx">name</span><span class="p">})</span> <span class="p">{</span>
+    <span class="k">return</span><span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Welcome</span> <span class="p">{</span><span class="nx">name</span><span class="p">}</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">site</span><span class="o">!&lt;</span><span class="sr">/p</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+<span class="p">}</span>       
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Nested3</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>You should be able to see how the <code class="language-plaintext highlighter-rouge">name</code> is passed down from <code class="language-plaintext highlighter-rouge">Nested1</code> to <code class="language-plaintext highlighter-rouge">Nested3</code> via props. It works, and in this case its acceptable, but could become cumbersome if there were many props to pass through from the top component to the lower components.</p>
+
+<h3 id="using-context">Using Context</h3>
+
+<p>What we can do instead is to store information that needs to be shared in this way in <em>context</em>. How do we create a context? First you have to create a context in a separate file:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// NameContext.js</span>
+
+<span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">NameContext</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createContext</span><span class="p">(</span><span class="dl">"</span><span class="s2">No name</span><span class="dl">"</span><span class="p">);</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">NameContext</span><span class="p">;</span>
+</code></pre></div></div>
+<p>This creates a context called <code class="language-plaintext highlighter-rouge">NameContext</code> and exports it: if there is no value yet, it will take the value “No name”.</p>
+
+<p>We can then use it in our top-level, parent component (<code class="language-plaintext highlighter-rouge">Context1</code>):</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Context1.js</span>
+
+<span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Context2</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Context2</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">NameContext</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./NameContext</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Context1</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span> <span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="dl">"</span><span class="s2">No name</span><span class="dl">"</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">updateState</span><span class="p">}</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">Go!</span><span class="dl">'</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">NameContext</span><span class="p">.</span><span class="nx">Provider</span> <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">Context2</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="sr">/NameContext.Provider</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">updateState</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setName</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+<p>Note how we:</p>
+<ul>
+  <li>import the context from the <code class="language-plaintext highlighter-rouge">NameContext</code> module;</li>
+  <li>when rendering <code class="language-plaintext highlighter-rouge">Context1</code>, we then set up a <code class="language-plaintext highlighter-rouge">NameContext.Provider</code> surrounding any child elements. This provides the given context to the child elements, note it has a value of <code class="language-plaintext highlighter-rouge">name</code>, which is the name from the state.</li>
+</ul>
+
+<p>Moving onto the next component down in the hierarchy, <code class="language-plaintext highlighter-rouge">Context2</code>:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">NameContext</span>  <span class="k">from</span> <span class="dl">'</span><span class="s1">./NameContext</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Context3</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Context3</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Context2</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useContext</span><span class="p">(</span><span class="nx">NameContext</span><span class="p">);</span>
+    <span class="k">return</span><span class="p">(</span>
+        <span class="o">&lt;&gt;</span>
+        <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="p">{</span><span class="nx">name</span><span class="p">}</span><span class="o">!&lt;</span><span class="sr">/h1</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="nx">Context3</span>  <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="sr">/</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+<span class="p">}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Context2</span><span class="p">;</span>
+</code></pre></div></div>
+<p>Note how we reference the context we need using <code class="language-plaintext highlighter-rouge">React.useContext</code> with the desired context (the context exported from <code class="language-plaintext highlighter-rouge">NameContext.js</code>) to access the name. The name used will be that provided by the provider in the parent context, which in this example is the name from the state.</p>
+
+<p>We do exactly the same in <code class="language-plaintext highlighter-rouge">Context3</code>:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">NameContext</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./NameContext</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Context3</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useContext</span><span class="p">(</span><span class="nx">NameContext</span><span class="p">);</span>
+    
+    <span class="k">return</span><span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Welcome</span> <span class="p">{</span><span class="nx">name</span><span class="p">}</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">site</span><span class="o">!&lt;</span><span class="sr">/p</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+<span class="p">}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Context3</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="passing-multiple-contexts">Passing multiple contexts</h3>
+
+<p>We can pass multiple contexts by nesting providers, e.g.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Context2</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Context2</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">NameContext</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./NameContext</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">CourseContext</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./CourseContext</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Context1</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span> <span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="dl">"</span><span class="s2">No Name</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">course</span><span class="p">,</span> <span class="nx">setCourse</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="dl">"</span><span class="s2">No Course</span><span class="dl">"</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="nx">Name</span><span class="p">:</span><span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span> <span class="o">/&gt;&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="nx">Course</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">course</span><span class="dl">'</span> <span class="o">/&gt;&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">updateState</span><span class="p">}</span> <span class="nx">value</span><span class="o">=</span><span class="dl">'</span><span class="s1">Go!</span><span class="dl">'</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">NameContext</span><span class="p">.</span><span class="nx">Provider</span> <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">CourseContext</span><span class="p">.</span><span class="nx">Provider</span> <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">course</span><span class="p">}</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nx">Context2</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="sr">/CourseContext.Provider</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/NameContext.Provider</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">updateState</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setName</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+        <span class="nx">setCourse</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">course</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Context1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>and we can then use them in child components separately, e.g:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">NameContext</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./NameContext</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">CourseContext</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./CourseContext</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">Context3</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useContext</span><span class="p">(</span><span class="nx">NameContext</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">course</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useContext</span><span class="p">(</span><span class="nx">CourseContext</span><span class="p">);</span>
+    
+    <span class="k">return</span><span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Welcome</span> <span class="p">{</span><span class="nx">name</span><span class="p">},</span> <span class="nx">studying</span> <span class="p">{</span><span class="nx">course</span><span class="p">},</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">site</span><span class="o">!&lt;</span><span class="sr">/p</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+<span class="p">}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Context3</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>We would of course need a separate <code class="language-plaintext highlighter-rouge">CourseContext</code>:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">CourseContext</span> <span class="o">=</span>  <span class="nx">React</span><span class="p">.</span><span class="nx">createContext</span><span class="p">(</span><span class="dl">"</span><span class="s2">No Course</span><span class="dl">"</span><span class="p">);</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">CourseContext</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="custom-hooks">Custom Hooks</h2>
+
+<p><em>See <a href="https://react.dev/learn/reusing-logic-with-custom-hooks">React documentation</a></em></p>
+
+<p>You can also write your own custom Hooks to perform operations that you might need to do several times on your UI. Typically, a custom Hook uses one or more built-in Hooks. For example, you might want to allow multiple fields to update state. If we did it without custom Hooks, we’d have to do something like this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">RepeatComponent</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span> <span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="dl">""</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">course</span><span class="p">,</span> <span class="nx">setCourse</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="dl">""</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="nx">Name</span><span class="p">:</span><span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span> <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">updateName</span><span class="p">}</span> <span class="sr">/&gt;&lt;br /</span><span class="o">&gt;</span>
+        <span class="nx">Course</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">course</span><span class="dl">'</span> <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">updateCourse</span><span class="p">}</span> <span class="sr">/&gt;&lt;br /</span><span class="o">&gt;</span>
+        <span class="nx">Name</span> <span class="p">{</span><span class="nx">name</span><span class="p">}</span> <span class="nx">course</span> <span class="p">{</span><span class="nx">course</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">updateName</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setName</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">updateCourse</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setCourse</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">course</span><span class="dl">'</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">RepeatComponent</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>This works, but hopefully you can see that <code class="language-plaintext highlighter-rouge">updateName()</code> and <code class="language-plaintext highlighter-rouge">updateCourse()</code> are both doing very similar things (updating a state variable with the value in a form field), so there is unnecessary repetition.</p>
+
+<p>What we can do instead is to create a <em>custom Hook</em> to update <em>any</em> state variable with the value in <em>any form field</em>. Here is an example of doing this (modified from the example in the <a href="https://react.dev/reference/react">React documentation</a> ).</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">useFormInput</span><span class="p">(</span><span class="nx">defaultValue</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">[</span><span class="nx">value</span><span class="p">,</span><span class="nx">setValue</span><span class="p">]</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="nx">defaultValue</span><span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">handleChange</span><span class="p">(</span><span class="nx">ev</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">setValue</span><span class="p">(</span><span class="nx">ev</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">value</span><span class="p">,</span> <span class="nx">handleChange</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">useFormInput</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>We are creating a custom Hook <code class="language-plaintext highlighter-rouge">useFormInput()</code>, which sets up a state variable inside it, which will contain the value the user entered in the form field.</li>
+  <li>We also create a <code class="language-plaintext highlighter-rouge">handleChange()</code> function which will run in response to an <code class="language-plaintext highlighter-rouge">onChange</code> event in a given form field, i.e. when the user types new text. It updates the state by calling <code class="language-plaintext highlighter-rouge">setValue()</code> with the text the user entered in that form field.</li>
+  <li>How do we know which text field to look at?atote the parameter <code class="language-plaintext highlighter-rouge">ev</code> to this function. Event handler functions, such as this, always receive at least one parameter, an object representing the <strong>event that triggered the event handler</strong>. We can obtain the specific page element (e.g form field, button) that triggered the event using <code class="language-plaintext highlighter-rouge">ev.target</code> (this is actually standard JavaScript, not just React). Thus, if it’s a form field, we can get the text within the field with <code class="language-plaintext highlighter-rouge">ev.target.value</code>.</li>
+  <li>So, in summary, the <code class="language-plaintext highlighter-rouge">handleChange</code> event handler is an event handler which will work with any form field, respond to the <code class="language-plaintext highlighter-rouge">onChange</code> event on that form field, and update the state to the contents of the text field.</li>
+  <li>Note how we <em>return</em> an object containing the <code class="language-plaintext highlighter-rouge">value</code> and <code class="language-plaintext highlighter-rouge">handleChange</code> properties, i.e the state and the <code class="language-plaintext highlighter-rouge">onChange</code> event handler. We will use these from our component: see below.</li>
+  <li>Note the short-hand way of returning an object where the property names of the object are the same as the variable names containing their values. We could, if we wanted to, write it this way:</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">return</span> <span class="p">{</span>
+    <span class="na">value</span><span class="p">:</span> <span class="nx">value</span><span class="p">,</span>
+    <span class="na">handleChange</span><span class="p">:</span> <span class="nx">handleChange</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>but, because the property names and variable names are the same, we can make this concise with:</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">return</span> <span class="p">{</span>
+    <span class="nx">value</span><span class="p">,</span> <span class="nx">handleChange</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>We then use our custom Hook inside a component with multiple form fields. Here is an example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">useFormInput</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./UseFormInput</span><span class="dl">'</span><span class="p">;</span>
+    
+<span class="kd">function</span> <span class="nx">CustomHookComponent</span><span class="p">()</span> <span class="p">{</span>
+    
+    <span class="kd">const</span> <span class="nx">ufiName</span> <span class="o">=</span> <span class="nx">useFormInput</span><span class="p">(</span><span class="dl">"</span><span class="s2">No name</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">ufiCourse</span> <span class="o">=</span> <span class="nx">useFormInput</span><span class="p">(</span><span class="dl">"</span><span class="s2">No course</span><span class="dl">"</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+        <span class="nx">Name</span><span class="p">:</span><span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span> <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">ufiName</span><span class="p">.</span><span class="nx">handleChange</span><span class="p">}</span> <span class="sr">/&gt;&lt;br /</span><span class="o">&gt;</span>
+        <span class="nx">Course</span><span class="p">:</span> <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">id</span><span class="o">=</span><span class="dl">'</span><span class="s1">course</span><span class="dl">'</span> <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">ufiCourse</span><span class="p">.</span><span class="nx">handleChange</span><span class="p">}</span> <span class="sr">/&gt;&lt;br /</span><span class="o">&gt;</span>
+        <span class="nx">Name</span> <span class="p">{</span><span class="nx">ufiName</span><span class="p">.</span><span class="nx">value</span><span class="p">}</span> <span class="nx">course</span> <span class="p">{</span><span class="nx">ufiCourse</span><span class="p">.</span><span class="nx">value</span><span class="p">}</span> <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">CustomHookComponent</span><span class="p">;</span> 
+</code></pre></div></div>
+<ul>
+  <li>
+    <p>Remember how the custom Hook returned an object with two fields, <code class="language-plaintext highlighter-rouge">handleChange</code> (the <code class="language-plaintext highlighter-rouge">onChange</code> event handler) and <code class="language-plaintext highlighter-rouge">value</code> (the state variable associated with the custom Hook).</p>
+  </li>
+  <li>
+    <p>We create two separate copies of this object, one for the name field and one for the course field. By doing that, we ensure that we create two separate state variables.</p>
+  </li>
+  <li>
+    <p>We then set the <code class="language-plaintext highlighter-rouge">onChange</code> event handler of each form field to the <code class="language-plaintext highlighter-rouge">handleChange</code> property of the appropriate object, and, in the JSX, include the <code class="language-plaintext highlighter-rouge">value</code> (i.e. the state) from each object returned from the Hook.</p>
+  </li>
+</ul>
+
+<h2 id="exercises">Exercises</h2>
+
+<ol>
+  <li>
+    <p>Rewrite your Lifting Up State exercise from week 3 so that it uses context instead to share the To Do list between components.</p>
+  </li>
+  <li>Try writing a custom Hook to perform an AJAX search. It would be called as follows:
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const ajaxHook = useAjax("URL");
+</code></pre></div>    </div>
+    <p>The custom Hook should store the AJAX results in state, and should be triggered by an <code class="language-plaintext highlighter-rouge">onChange</code> event on any form field. Test it out from a component which connects to the music search API (see exercises from week 3) when a user types an artist into a search form. The component should display the AJAX results stored in state within the Hook.</p>
+  </li>
+  <li>Try enhancing the mapping example to show all the results on the map as markers (this will be in your Effect). To be able to clear all markers (which you will do if you do a new search) you need to create a Leaflet <em>layer group</em>. Example of creating a layer group and adding it to a map:
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">layerGroup</span> <span class="o">=</span> <span class="nx">L</span><span class="p">.</span><span class="nx">layerGroup</span><span class="p">().</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span>
+</code></pre></div>    </div>
+    <p>Adding a marker to a layer group:</p>
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">L</span><span class="p">.</span><span class="nx">marker</span><span class="p">([</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">lon</span><span class="p">]).</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">layerGroup</span><span class="p">);</span>
+</code></pre></div>    </div>
+    <p>Clearing all markers on a layer group:</p>
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">layerGroup</span><span class="p">.</span><span class="nx">clearLayers</span><span class="p">();</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>
